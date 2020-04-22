@@ -166,7 +166,7 @@ function CallToArms:PlaySound()
 		return
 	end
 	
-	PlaySound("OrcExploration", "master")
+	PlaySound(SOUNDKIT.MAP_PING, "Master")
 	
 	self.SoundThrottle.CanPlaySound = false
 	self.SoundThrottle:SetScript("OnUpdate", SoundThrottleOnUpdate)
@@ -298,10 +298,10 @@ function CallToArms:VARIABLES_LOADED()
 	end
 	
 	for i = 1, self.NumHeaders do
-		if (not CallToArms["Enable"..self.HeadersByIndex[i].DungeonName]) then
-			self.HeadersByIndex[i]:Disable()
-		else
+		if (CallToArms["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
 			self.HeadersByIndex[i]:Enable()
+		--else
+		--	self.HeadersByIndex[i]:Disable()
 		end
 	end
 end
@@ -327,8 +327,8 @@ function CallToArms:SortHeaders()
 		if (not v.IsDisabled and v:IsVisible()) then
 			v:ClearAllPoints()
 			
-			if (not LastHeader) then
-				v:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -1, -3)
+			if (LastHeader == self) then
+				v:SetPoint("TOPLEFT", LastHeader, "BOTTOMLEFT", -1, -3)
 			else
 				v:SetPoint("TOPLEFT", LastHeader.LastShown, "BOTTOMLEFT", 0, -2)
 			end
@@ -1293,18 +1293,18 @@ local CreateCTAConfig = function()
 		Checkbox.Text:SetShadowOffset(1.25, -1.25)
 		Checkbox.Text:SetText("Enable " .. DungeonName)
 		
-		if (CallToArms["Enable"..DungeonName] == nil) then
+		if (CallToArms["Enable"..DungeonName] ~= true) then
 			CallToArms["Enable"..DungeonName] = true
 		end
 		
-		if CallToArms["Enable"..DungeonName] then
+		if (CallToArms["Enable"..DungeonName] == true) then
 			Checkbox.Tex:SetVertexColor(0, 0.8, 0)
 		else
 			Checkbox.Tex:SetVertexColor(0.8, 0, 0)
 		end
 		
 		Checkbox:SetScript("OnMouseUp", function(self)
-			if CallToArms["Enable"..self.DungeonName] then
+			if (CallToArms["Enable"..self.DungeonName] == true) then
 				CallToArms["Enable"..self.DungeonName] = false
 				
 				CallToArms.HeadersByIndex[self.Index]:Disable()
