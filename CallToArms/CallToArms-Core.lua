@@ -110,32 +110,26 @@ CallToArms.Text:SetTextColor(0.92, 0.92, 0.92)
 CallToArms.CloseButton = CreateFrame("Frame", nil, CallToArms)
 CallToArms.CloseButton:SetPoint("TOPRIGHT", CallToArms, 0, 0)
 CallToArms.CloseButton:SetSize(18, 18)
-CallToArms.CloseButton:SetScript("OnEnter", function(self) self.Label:SetTextColor(1, 0, 0) end)
-CallToArms.CloseButton:SetScript("OnLeave", function(self) self.Label:SetTextColor(0.92, 0.92, 0.92) end)
+CallToArms.CloseButton:SetScript("OnEnter", function(self) self.Texture:SetVertexColor(1, 0, 0) end)
+CallToArms.CloseButton:SetScript("OnLeave", function(self) self.Texture:SetVertexColor(0.92, 0.92, 0.92) end)
 CallToArms.CloseButton:SetScript("OnMouseUp", function() CallToArms:Hide() end)
 
-CallToArms.CloseButton.Label = CallToArms.CloseButton:CreateFontString(nil, "OVERLAY")
-CallToArms.CloseButton.Label:SetPoint("CENTER", CallToArms.CloseButton, 0.5, -0.5)
-CallToArms.CloseButton.Label:SetFont(Font, 18)
-CallToArms.CloseButton.Label:SetText("×")
-CallToArms.CloseButton.Label:SetShadowColor(0, 0, 0)
-CallToArms.CloseButton.Label:SetShadowOffset(1.25, -1.25)
-CallToArms.CloseButton.Label:SetTextColor(0.92, 0.92, 0.92)
+CallToArms.CloseButton.Texture = CallToArms.CloseButton:CreateTexture(nil, "OVERLAY")
+CallToArms.CloseButton.Texture:SetPoint("CENTER", CallToArms.CloseButton, 0, 0)
+CallToArms.CloseButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIClose.tga")
+CallToArms.CloseButton.Texture:SetVertexColor(0.92, 0.92, 0.92)
 
 CallToArms.ToggleButton = CreateFrame("Frame", nil, CallToArms)
-CallToArms.ToggleButton:SetPoint("RIGHT", CallToArms.CloseButton, "LEFT", 0, 0)
+CallToArms.ToggleButton:SetPoint("RIGHT", CallToArms.CloseButton, "LEFT", 0, -0.5)
 CallToArms.ToggleButton:SetSize(18, 18)
-CallToArms.ToggleButton:SetScript("OnEnter", function(self) self.Label:SetTextColor(1, 0, 0) end)
-CallToArms.ToggleButton:SetScript("OnLeave", function(self) self.Label:SetTextColor(0.92, 0.92, 0.92) end)
+CallToArms.ToggleButton:SetScript("OnEnter", function(self) self.Texture:SetVertexColor(1, 0, 0) end)
+CallToArms.ToggleButton:SetScript("OnLeave", function(self) self.Texture:SetVertexColor(0.92, 0.92, 0.92) end)
 CallToArms.ToggleButton:SetScript("OnMouseUp", function() CallToArms:Toggle() end)
 
-CallToArms.ToggleButton.Label = CallToArms.ToggleButton:CreateFontString(nil, "OVERLAY")
-CallToArms.ToggleButton.Label:SetPoint("CENTER", CallToArms.ToggleButton, 0.5, -4)
-CallToArms.ToggleButton.Label:SetFont("Interface\\Addons\\CallToArms\\Arial.ttf", 10)
-CallToArms.ToggleButton.Label:SetText("▬")
-CallToArms.ToggleButton.Label:SetShadowColor(0, 0, 0)
-CallToArms.ToggleButton.Label:SetShadowOffset(1.25, -1.25)
-CallToArms.ToggleButton.Label:SetTextColor(0.92, 0.92, 0.92)
+CallToArms.ToggleButton.Texture = CallToArms.ToggleButton:CreateTexture(nil, "OVERLAY")
+CallToArms.ToggleButton.Texture:SetPoint("CENTER", CallToArms.ToggleButton, 0, -0.5)
+CallToArms.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowUp.tga")
+CallToArms.ToggleButton.Texture:SetVertexColor(0.92, 0.92, 0.92)
 
 CallToArms.Backdrop = CreateFrame("Frame", nil, CallToArms)
 CallToArms.Backdrop:SetPoint("TOPLEFT", CallToArms, -4, 4)
@@ -354,9 +348,7 @@ function CallToArms:Minimize()
 	Options.Minimized = true
 	CallToArms.Minimized = true
 	
-	self.ToggleButton.Label:SetPoint("CENTER", self.ToggleButton, 0.5, 0)
-	self.ToggleButton.Label:SetFont("Interface\\Addons\\CallToArms\\Arial.ttf", 14)
-	self.ToggleButton.Label:SetText("■")
+	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowDown.tga")
 	
 	self.NumActive = 0
 	
@@ -383,9 +375,7 @@ function CallToArms:Maximize()
 	Options.Minimized = false
 	CallToArms.Minimized = false
 	
-	self.ToggleButton.Label:SetPoint("CENTER", self.ToggleButton, 0.5, -4)
-	self.ToggleButton.Label:SetFont("Interface\\Addons\\CallToArms\\Arial.ttf", 10)
-	self.ToggleButton.Label:SetText("▬")
+	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowUp.tga")
 	
 	self.NumActive = 0
 	
@@ -951,7 +941,7 @@ end
 local CreateCTAConfig = function()
 	local Config = CreateFrame("Frame", "CallToArmsConfig", UIParent)
 	Config:SetSize(200, 18)
-	Config:SetPoint("CENTER", UIParent, 0, 80)
+	Config:SetPoint("CENTER", UIParent, 0, 160)
 	Config:SetMovable(true)
 	Config:EnableMouse(true)
 	Config:SetUserPlaced(true)
@@ -982,16 +972,13 @@ local CreateCTAConfig = function()
 	Config.CloseButton = CreateFrame("Frame", nil, Config)
 	Config.CloseButton:SetPoint("TOPRIGHT", Config, 0, 0)
 	Config.CloseButton:SetSize(18, 18)
-	Config.CloseButton:SetScript("OnEnter", function(self) self.Label:SetTextColor(1, 0, 0) end)
-	Config.CloseButton:SetScript("OnLeave", function(self) self.Label:SetTextColor(1, 1, 1) end)
+	Config.CloseButton:SetScript("OnEnter", function(self) self.Label:SetVertexColor(1, 0, 0) end)
+	Config.CloseButton:SetScript("OnLeave", function(self) self.Label:SetVertexColor(1, 1, 1) end)
 	Config.CloseButton:SetScript("OnMouseUp", function() Config:Hide() end)
 	
-	Config.CloseButton.Label = Config.CloseButton:CreateFontString(nil, "OVERLAY")
-	Config.CloseButton.Label:SetPoint("CENTER", Config.CloseButton, 0.5, -0.5)
-	Config.CloseButton.Label:SetFont(Font, 18)
-	Config.CloseButton.Label:SetText("×")
-	Config.CloseButton.Label:SetShadowColor(0, 0, 0)
-	Config.CloseButton.Label:SetShadowOffset(1.25, -1.25)
+	Config.CloseButton.Label = Config.CloseButton:CreateTexture(nil, "OVERLAY")
+	Config.CloseButton.Label:SetPoint("CENTER", Config.CloseButton, 0, -0.5)
+	Config.CloseButton.Label:SetTexture("Interface\\AddOns\\CallToArms\\vUIClose.tga")
 	
 	local ConfigWindow = CreateFrame("Frame", nil, Config)
 	ConfigWindow:SetSize(200, 240)
