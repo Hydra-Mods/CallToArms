@@ -225,19 +225,7 @@ function CallToArms:PLAYER_REGEN_DISABLED()
 end
 
 function CallToArms:PLAYER_ENTERING_WORLD()
-	if (not self.FirstRun) then
-		self.FirstRun = true
-		
-		if (UnitLevel("player") ~= MAX_PLAYER_LEVEL) then -- We're only interested in max level information here.
-			self:UnregisterAllEvents()
-			self:Hide()
-			
-			return
-		end
-		
-		self:UpdateAlpha(Options.WindowAlpha)
-	end
-	
+	self:UpdateAlpha(Options.WindowAlpha)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
