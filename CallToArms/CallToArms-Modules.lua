@@ -1,7 +1,7 @@
 local CallToArmsGlobal = CallToArmsGlobal
 
 local Level = UnitLevel("player")
-local LFD_MAX_SHOWN_LEVEL_DIFF = LFD_MAX_SHOWN_LEVEL_DIFF -- LFD uses this to filter level range for dungeons
+local LFD_MAX_SHOWN_LEVEL_DIFF = LFD_MAX_SHOWN_LEVEL_DIFF -- 15, LFD uses this to filter level range for dungeons
 
 -- Find dungeons
 for i = 1, GetNumRandomDungeons() do

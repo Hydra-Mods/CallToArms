@@ -1,6 +1,6 @@
 local Options = {}
 
-Options.AnnounceStart = true -- Announce when a bonus queue begins
+Options.AnnounceStart = false -- Announce when a bonus queue begins
 Options.AnnounceEndings = false -- Announce when a bonus queue ends
 Options.UpdateInterval = 45 -- Number of seconds between updates
 Options.WindowAlpha = 1 -- The transparency of the window
