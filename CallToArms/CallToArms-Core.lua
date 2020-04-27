@@ -52,7 +52,7 @@ local RoleMapByClass = {-- CanTank, CanHeal
 	["WARRIOR"] =     {true, false},
 }
 
-local BlankTex = "Interface\\AddOns\\CallToArms\\Blank.tga"
+local BlankTex = "Interface\\AddOns\\CallToArms\\vUIBlank.tga"
 local BarTex = "Interface\\AddOns\\CallToArms\\vUI4.tga"
 local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
 
