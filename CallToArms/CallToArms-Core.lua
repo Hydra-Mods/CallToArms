@@ -33,8 +33,6 @@ local pairs = pairs
 local RolesName = {TANK, HEALER, DAMAGER}
 local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
 
-local BATTLEGROUND_HOLIDAY = "Call to Arms"
-
 local Class = select(2, UnitClass("player"))
 
 local RoleMapByClass = {-- CanTank, CanHeal
@@ -279,8 +277,6 @@ function CallToArms:VARIABLES_LOADED()
 	for i = 1, self.NumHeaders do
 		if (CallToArms["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
 			self.HeadersByIndex[i]:Enable()
-		--else
-		--	self.HeadersByIndex[i]:Disable()
 		end
 	end
 end
