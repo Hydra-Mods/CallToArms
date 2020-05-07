@@ -10,8 +10,9 @@ Options.MinimizeInGroup = false -- Automatically minimize while in groups
 Options.PlaySound = true -- Play a sound when a new queue appears
 Options.Minimized = false
 
-local UpdateInt = 45
-local CombatTime = 0
+local format = format
+local print = print
+local pairs = pairs
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
@@ -26,12 +27,23 @@ local SetLFGDungeon = SetLFGDungeon
 local GetLFGRoles = GetLFGRoles
 local SetLFGRoles = SetLFGRoles
 local JoinLFG = JoinLFG
-local format = format
-local print = print
-local pairs = pairs
+local LFD_MAX_SHOWN_LEVEL_DIFF = LFD_MAX_SHOWN_LEVEL_DIFF -- 15, LFD uses this to filter level range for dungeons
+
+local UpdateInt = 45
+local CombatTime = 0
+local Level = UnitLevel("player")
+local ID, Name, SubType, Min, Max, Timewalking, _
 
 local RolesName = {TANK, HEALER, DAMAGER}
 local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
+
+local Rename = {
+	[744] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Burning Crusade) --> Timewalking
+	[995] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Wrath of the Lich King) --> Timewalking
+	[1453] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Mists of Pandaria) --> Timewalking
+	[1670] = LFG_TYPE_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Dungeon
+	[1671] = LFG_TYPE_HEROIC_DUNGEON, -- Random Heroic (Battle for Azeroth) --> Heroic Dungeon
+}
 
 local Class = select(2, UnitClass("player"))
 
@@ -222,7 +234,30 @@ function CallToArms:PLAYER_REGEN_DISABLED()
 	CombatTime = GetTime()
 end
 
+local CreateModules = function()
+	-- Find dungeons
+	for i = 1, GetNumRandomDungeons() do
+		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
+		
+		if ((Level >= (Min - LFD_MAX_SHOWN_LEVEL_DIFF)) and (Level <= (Max + LFD_MAX_SHOWN_LEVEL_DIFF))) or (Timewalking and Level >= Min) then
+			CallToArmsGlobal:NewModule(ID, Rename[ID] or Name, SubType)
+		end
+	end
+	
+	-- Find raids
+	for i = 1, GetNumRFDungeons() do
+		ID, Name, SubType, _, _, _, Min, Max = GetRFDungeonInfo(i)
+		
+		if (Level >= Min) and (Level <= Max) then
+			CallToArmsGlobal:NewModule(ID, Name, SubType)
+		end
+	end
+	
+	RequestLFDPlayerLockInfo()
+end
+
 function CallToArms:PLAYER_ENTERING_WORLD()
+	C_Timer.After(5, CreateModules) -- GetNumRandomDungeons() returns 0 on PEW. I tried to find out if toggling the LFG frame or loading anything would populate the list, but just waiting seems to be the answer.
 	self:UpdateAlpha(Options.WindowAlpha)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
