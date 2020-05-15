@@ -675,12 +675,11 @@ function CallToArms:NewModule(id, name, subtypeid)
 	Header.Text:SetText(name)
 	Header.Text:SetTextColor(0.92, 0.92, 0.08)
 	
-	Header.IsQueued = CreateFrame("Frame", nil, Header)
-	Header.IsQueued:SetSize(130, 18)
-	Header.IsQueued:SetPoint("CENTER", Header, 0, 0)
-	Header.IsQueued:SetBackdrop(Outline)
-	Header.IsQueued:SetBackdropColor(0, 0, 0, 0)
-	Header.IsQueued:SetBackdropBorderColor(0.92, 0.92, 0.08)
+	Header.IsQueued = Header:CreateTexture(nil, "OVERLAY")
+	Header.IsQueued:SetSize(Header:GetWidth() - 12, 12)
+	Header.IsQueued:SetPoint("BOTTOM", Header, 0, 1)
+	Header.IsQueued:SetTexture("Interface\\AddOns\\CallToArms\\RenHorizonUp.tga")
+	Header.IsQueued:SetVertexColor(0.92, 0.92, 0.08, 0.4)
 	Header.IsQueued:Hide()
 	
 	Header.TankActive = false
