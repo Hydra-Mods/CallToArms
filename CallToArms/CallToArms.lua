@@ -647,7 +647,11 @@ local OnEnter = function(self)
 			GameTooltip:SetPoint("TOP", self, "BOTTOM", 0, -8)
 			
 			for j = 1, ItemCount do
-				GameTooltip:AddLine(GetLFGDungeonShortageRewardLink(self.DungeonID, i, j))
+				local Link = GetLFGDungeonShortageRewardLink(self.DungeonID, i, j)
+				
+				if Link then
+					GameTooltip:SetHyperlink(Link)
+				end
 			end
 			
 			GameTooltip:Show()
