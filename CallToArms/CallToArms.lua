@@ -637,10 +637,27 @@ end
 
 local OnEnter = function(self)
 	self.MouseOver:SetAlpha(1)
+	
+	for i = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+		local Eligable, ForTank, ForHealer, ForDamage, ItemCount = GetLFGRoleShortageRewards(self.DungeonID, i)
+		
+		if (ItemCount and ItemCount > 0) then
+			GameTooltip:SetOwner(self, "ANCHOR_NONE")
+			GameTooltip:ClearAllPoints()
+			GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 8)
+			
+			for j = 1, ItemCount do
+				GameTooltip:AddLine(GetLFGDungeonShortageRewardLink(self.DungeonID, i, j))
+			end
+			
+			GameTooltip:Show()
+		end
+	end
 end
 
 local OnLeave = function(self)
 	self.MouseOver:SetAlpha(0)
+	GameTooltip:Hide()
 end
 
 function CallToArms:NewModule(id, name, subtypeid)
@@ -714,10 +731,6 @@ function CallToArms:NewModule(id, name, subtypeid)
 			CallToArms.NumActive = 0
 			
 			for k, v in pairs(CallToArms.Headers) do
-				for i = 1, 3 do
-					v[i]:EnableMouse(true)
-				end
-				
 				v:Update()
 			end
 			
@@ -737,14 +750,6 @@ function CallToArms:NewModule(id, name, subtypeid)
 		
 		if Options.Minimized then
 			CallToArms.NumActive = 0
-			
-			for k, v in pairs(CallToArms.Headers) do
-				for i = 1, 3 do
-					v[i]:EnableMouse(true)
-				end
-				
-				v:Update()
-			end
 			
 			if (CallToArms.NumActive > 0) then
 				CallToArms.Text:SetText(BATTLEGROUND_HOLIDAY .. " (" .. CallToArms.NumActive .. ")")
