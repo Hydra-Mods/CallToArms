@@ -644,7 +644,7 @@ local OnEnter = function(self)
 		if (ItemCount and ItemCount > 0) then
 			GameTooltip:SetOwner(self, "ANCHOR_NONE")
 			GameTooltip:ClearAllPoints()
-			GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 8)
+			GameTooltip:SetPoint("TOP", self, "BOTTOM", 0, -8)
 			
 			for j = 1, ItemCount do
 				GameTooltip:AddLine(GetLFGDungeonShortageRewardLink(self.DungeonID, i, j))
