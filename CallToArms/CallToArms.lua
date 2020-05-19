@@ -240,7 +240,7 @@ local CreateModules = function()
 		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
 		
 		if ((Level >= (Min - LFD_MAX_SHOWN_LEVEL_DIFF)) and (Level <= (Max + LFD_MAX_SHOWN_LEVEL_DIFF))) or (Timewalking and Level >= Min) then
-			CallToArmsGlobal:NewModule(ID, Rename[ID] or Name, SubType)
+			CallToArms:NewModule(ID, Rename[ID] or Name, SubType)
 		end
 	end
 	
@@ -249,16 +249,26 @@ local CreateModules = function()
 		ID, Name, SubType, _, _, _, Min, Max = GetRFDungeonInfo(i)
 		
 		if (Level >= Min) and (Level <= Max) then
-			CallToArmsGlobal:NewModule(ID, Name, SubType)
+			CallToArms:NewModule(ID, Name, SubType)
 		end
 	end
+	
+	for i = 1, CallToArms.NumHeaders do
+		if (Options["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == true) then
+			CallToArms.HeadersByIndex[i]:Enable()
+		else
+			CallToArms.HeadersByIndex[i]:Disable()
+			print(CallToArms.HeadersByIndex[i].DungeonName)
+		end
+	end
+	
+	CallToArms:UpdateAlpha(Options.WindowAlpha)
 	
 	RequestLFDPlayerLockInfo()
 end
 
 function CallToArms:PLAYER_ENTERING_WORLD()
 	C_Timer.After(5, CreateModules) -- GetNumRandomDungeons() returns 0 on PEW. I tried to find out if toggling the LFG frame or loading anything would populate the list, but just waiting seems to be the answer.
-	self:UpdateAlpha(Options.WindowAlpha)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
@@ -309,11 +319,14 @@ function CallToArms:VARIABLES_LOADED()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	end
 	
-	for i = 1, self.NumHeaders do
-		if (CallToArmsSettings["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
+	--[[for i = 1, self.NumHeaders do
+		if (Options["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
 			self.HeadersByIndex[i]:Enable()
+		else
+			self.HeadersByIndex[i]:Disable()
+			print(self.HeadersByIndex[i].DungeonName)
 		end
-	end
+	end]]
 end
 
 function CallToArms:GROUP_ROSTER_UPDATE()
@@ -1133,7 +1146,7 @@ local CreateCTAConfig = function()
 	
 	WindowAlphaOption.EditBox.Hook = function(value)
 		Options.WindowAlpha = value
-		CallToArms.WindowAlpha = value
+		CallToArmsSettings.WindowAlpha = value
 		
 		CallToArms:UpdateAlpha(value)
 	end
@@ -1305,25 +1318,25 @@ local CreateCTAConfig = function()
 		Checkbox.Text:SetShadowOffset(1, -1)
 		Checkbox.Text:SetText(DungeonName)
 		
-		if (CallToArms["Enable"..DungeonName] ~= true) then
-			CallToArms["Enable"..DungeonName] = true
+		if (CallToArmsSettings["Enable"..DungeonName] == nil) then
+			CallToArmsSettings["Enable"..DungeonName] = true
 		end
 		
-		if (CallToArms["Enable"..DungeonName] == true) then
+		if (CallToArmsSettings["Enable"..DungeonName] == true) then
 			Checkbox.Tex:SetVertexColor(0, 0.8, 0)
 		else
 			Checkbox.Tex:SetVertexColor(0.8, 0, 0)
 		end
 		
 		Checkbox:SetScript("OnMouseUp", function(self)
-			if (CallToArms["Enable"..self.DungeonName] == true) then
-				CallToArms["Enable"..self.DungeonName] = false
+			if (CallToArmsSettings["Enable"..self.DungeonName] == true) then
+				CallToArmsSettings["Enable"..self.DungeonName] = false
 				
 				CallToArms.HeadersByIndex[self.Index]:Disable()
 				
 				self.Tex:SetVertexColor(0.8, 0, 0)
 			else
-				CallToArms["Enable"..self.DungeonName] = true
+				CallToArmsSettings["Enable"..self.DungeonName] = true
 				
 				CallToArms.HeadersByIndex[self.Index]:Enable()
 				
