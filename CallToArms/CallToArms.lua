@@ -295,11 +295,11 @@ function CallToArms:LFG_UPDATE_RANDOM_INFO()
 end
 
 function CallToArms:VARIABLES_LOADED()
-	if (not CallToArms) then
-		CallToArms = {}
+	if (not CallToArmsSettings) then
+		CallToArmsSettings = {}
 	end
 
-	for k, v in pairs(CallToArms) do
+	for k, v in pairs(CallToArmsSettings) do
 		Options[k] = v
 	end
 	
@@ -310,7 +310,7 @@ function CallToArms:VARIABLES_LOADED()
 	end
 	
 	for i = 1, self.NumHeaders do
-		if (CallToArms["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
+		if (CallToArmsSettings["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
 			self.HeadersByIndex[i]:Enable()
 		end
 	end
@@ -1198,12 +1198,12 @@ local CreateCTAConfig = function()
 	ConfigWindow.Boxes[1].Text:SetText("Announce bonuses beginning")
 	ConfigWindow.Boxes[1]:SetScript("OnMouseUp", function(self)
 		if Options.AnnounceStart then
-			CallToArms.AnnounceStart = false
+			CallToArmsSettings.AnnounceStart = false
 			Options.AnnounceStart = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 		else
-			CallToArms.AnnounceStart = true
+			CallToArmsSettings.AnnounceStart = true
 			Options.AnnounceStart = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
@@ -1213,12 +1213,12 @@ local CreateCTAConfig = function()
 	ConfigWindow.Boxes[2].Text:SetText("Announce bonuses ending")
 	ConfigWindow.Boxes[2]:SetScript("OnMouseUp", function(self)
 		if Options.AnnounceEndings then
-			CallToArms.AnnounceEndings = false
+			CallToArmsSettings.AnnounceEndings = false
 			Options.AnnounceEndings = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 		else
-			CallToArms.AnnounceEndings = true
+			CallToArmsSettings.AnnounceEndings = true
 			Options.AnnounceEndings = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
@@ -1228,14 +1228,14 @@ local CreateCTAConfig = function()
 	ConfigWindow.Boxes[3].Text:SetText("Filter roles you cannot perform")
 	ConfigWindow.Boxes[3]:SetScript("OnMouseUp", function(self)
 		if Options.FilterRole then
-			CallToArms.FilterRole = false
+			CallToArmsSettings.FilterRole = false
 			Options.FilterRole = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 			
 			CallToArms:LFG_UPDATE_RANDOM_INFO()
 		else
-			CallToArms.FilterRole = true
+			CallToArmsSettings.FilterRole = true
 			Options.FilterRole = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
@@ -1253,14 +1253,14 @@ local CreateCTAConfig = function()
 	ConfigWindow.Boxes[4].Text:SetText("Auto minimize in groups")
 	ConfigWindow.Boxes[4]:SetScript("OnMouseUp", function(self)
 		if Options.MinimizeInGroup then
-			CallToArms.MinimizeInGroup = false
+			CallToArmsSettings.MinimizeInGroup = false
 			Options.MinimizeInGroup = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 			
 			CallToArms:RegisterEvent("GROUP_ROSTER_UPDATE")
 		else
-			CallToArms.MinimizeInGroup = true
+			CallToArmsSettings.MinimizeInGroup = true
 			Options.MinimizeInGroup = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
