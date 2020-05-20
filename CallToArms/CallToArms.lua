@@ -258,7 +258,6 @@ local CreateModules = function()
 			CallToArms.HeadersByIndex[i]:Enable()
 		else
 			CallToArms.HeadersByIndex[i]:Disable()
-			print(CallToArms.HeadersByIndex[i].DungeonName)
 		end
 	end
 	
@@ -318,15 +317,6 @@ function CallToArms:VARIABLES_LOADED()
 	if Options.MinimizeInGroup then
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	end
-	
-	--[[for i = 1, self.NumHeaders do
-		if (Options["Enable"..self.HeadersByIndex[i].DungeonName] == true) then
-			self.HeadersByIndex[i]:Enable()
-		else
-			self.HeadersByIndex[i]:Disable()
-			print(self.HeadersByIndex[i].DungeonName)
-		end
-	end]]
 end
 
 function CallToArms:GROUP_ROSTER_UPDATE()
