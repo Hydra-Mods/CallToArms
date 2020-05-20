@@ -1085,7 +1085,7 @@ local CreateCTAConfig = function()
 	UpdateIntOption.EditBox.Hook = function(value)
 		UpdateInt = value
 		Options.UpdateInterval = value
-		CallToArms.UpdateInterval = value
+		CallToArmsSettings.UpdateInterval = value
 	end
 	
 	-- Window alpha
