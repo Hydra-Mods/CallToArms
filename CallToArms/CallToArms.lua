@@ -103,7 +103,7 @@ CallToArms.Texture = CallToArms:CreateTexture(nil, "ARTWORK")
 CallToArms.Texture:SetPoint("TOPLEFT", CallToArms, 0, 0)
 CallToArms.Texture:SetPoint("BOTTOMRIGHT", CallToArms, 0, 0)
 CallToArms.Texture:SetTexture(BarTex)
-CallToArms.Texture:SetVertexColor(0.2, 0.2, 0.2)
+CallToArms.Texture:SetVertexColor(0.25, 0.25, 0.25)
 
 CallToArms.Text = CallToArms:CreateFontString(nil, "OVERLAY")
 CallToArms.Text:SetPoint("LEFT", CallToArms, 4, -0.5)
@@ -142,7 +142,7 @@ CallToArms.Backdrop = CreateFrame("Frame", nil, CallToArms)
 CallToArms.Backdrop:SetPoint("TOPLEFT", CallToArms, -4, 4)
 CallToArms.Backdrop:SetPoint("BOTTOMRIGHT", CallToArms, 4, -4)
 CallToArms.Backdrop:SetBackdrop(Outline)
-CallToArms.Backdrop:SetBackdropColor(0.2, 0.2, 0.2)
+CallToArms.Backdrop:SetBackdropColor(0.25, 0.25, 0.25)
 CallToArms.Backdrop:SetBackdropBorderColor(0, 0, 0)
 CallToArms.Backdrop:SetFrameStrata("LOW")
 
@@ -234,7 +234,7 @@ function CallToArms:PLAYER_REGEN_DISABLED()
 	CombatTime = GetTime()
 end
 
-local CreateModules = function()
+function CallToArms:CreateModules()
 	-- Find dungeons
 	for i = 1, GetNumRandomDungeons() do
 		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
@@ -267,7 +267,7 @@ local CreateModules = function()
 end
 
 function CallToArms:PLAYER_ENTERING_WORLD()
-	C_Timer.After(5, CreateModules) -- GetNumRandomDungeons() returns 0 on PEW. I tried to find out if toggling the LFG frame or loading anything would populate the list, but just waiting seems to be the answer.
+	C_Timer.After(5, self.CreateModules) -- GetNumRandomDungeons() returns 0 on PEW. I tried to find out if toggling the LFG frame or loading anything would populate the list, but just waiting seems to be the answer.
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
@@ -307,9 +307,9 @@ function CallToArms:VARIABLES_LOADED()
 	if (not CallToArmsSettings) then
 		CallToArmsSettings = {}
 	end
-
-	for k, v in pairs(CallToArmsSettings) do
-		Options[k] = v
+	
+	for Key, Value in pairs(CallToArmsSettings) do
+		Options[Key] = Value
 	end
 	
 	self.Ready = true
@@ -428,7 +428,7 @@ function CallToArms:UpdateAlpha(value)
 		end
 	end
 	
-	self.Backdrop:SetBackdropColor(0.2, 0.2, 0.2, value)
+	self.Backdrop:SetBackdropColor(0.25, 0.25, 0.25, value)
 end
 
 local OnEvent = function(self, event, ...)
@@ -687,7 +687,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 	Header.Texture:SetPoint("TOPLEFT", Header, 1, -1)
 	Header.Texture:SetPoint("BOTTOMRIGHT", Header, -1, 1)
 	Header.Texture:SetTexture(BarTex)
-	Header.Texture:SetVertexColor(0.2, 0.2, 0.2)
+	Header.Texture:SetVertexColor(0.25, 0.25, 0.25)
 	
 	Header.Text = Header:CreateFontString(nil, "OVERLAY")
 	Header.Text:SetPoint("LEFT", Header, 4, -0.5)
@@ -965,9 +965,63 @@ local EditBoxOnMouseWheel = function(self, delta)
 	self.Hook(Value)
 end
 
+local MAX_SHOWN = 12
+
+local Scroll = function(self)
+	local First = false
+	
+	for i = 1, #self.Widgets do
+		if (i >= self.Offset) and (i <= self.Offset + MAX_SHOWN - 1) then
+			if (not First) then
+				self.Widgets[i]:SetPoint("TOPLEFT", self.ButtonParent, 3, -3)
+				First = true
+			else
+				self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i-1], "BOTTOMLEFT", 0, -2)
+			end
+			
+			self.Widgets[i]:Show()
+		else
+			self.Widgets[i]:Hide()
+		end
+	end
+end
+
+local ConfigOnMouseWheel = function(self, delta)
+	if (delta == 1) then -- up
+		self.Offset = self.Offset - 1
+		
+		if (self.Offset <= 1) then
+			self.Offset = 1
+		end
+	else -- down
+		self.Offset = self.Offset + 1
+		
+		if (self.Offset > (#self.Widgets - (MAX_SHOWN - 1))) then
+			self.Offset = self.Offset - 1
+		end
+	end
+	
+	Scroll(self)
+	self.ScrollBar:SetValue(self.Offset)
+end
+
+local ScrollBarOnValueChanged = function(self, value)
+	local Value = floor(value + 0.5)
+	
+	self.Parent.Offset = Value
+	
+	Scroll(self.Parent)
+end
+
 local CreateCTAConfig = function()
+	if (CallToArms.NumHeaders == 0) then
+		print("Still scanning for headers. Try again in a moment.")
+		
+		return
+	end
+	
 	local Config = CreateFrame("Frame", "CallToArmsConfig", UIParent)
-	Config:SetSize(200, 18)
+	Config:SetSize(210, 18)
 	Config:SetPoint("CENTER", UIParent, 0, 160)
 	Config:SetMovable(true)
 	Config:EnableMouse(true)
@@ -986,7 +1040,7 @@ local CreateCTAConfig = function()
 	Config.Texture:SetPoint("TOPLEFT", Config, 0, 0)
 	Config.Texture:SetPoint("BOTTOMRIGHT", Config, 0, 0)
 	Config.Texture:SetTexture(BarTex)
-	Config.Texture:SetVertexColor(0.2, 0.2, 0.2)
+	Config.Texture:SetVertexColor(0.25, 0.25, 0.25)
 	
 	Config.Text = Config:CreateFontString(nil, "OVERLAY")
 	Config.Text:SetPoint("LEFT", Config, 3, -0.5)
@@ -1007,9 +1061,15 @@ local CreateCTAConfig = function()
 	Config.CloseButton.Label:SetPoint("CENTER", Config.CloseButton, 0, -0.5)
 	Config.CloseButton.Label:SetTexture("Interface\\AddOns\\CallToArms\\vUIClose.tga")
 	
-	local ConfigWindow = CreateFrame("Frame", nil, Config)
-	ConfigWindow:SetSize(200, 240)
+	local ConfigWindow = CreateFrame("Frame", "CallToArmsConfigWindow", Config)
+	ConfigWindow:SetSize(210, 240)
 	ConfigWindow:SetPoint("TOPLEFT", Config, "BOTTOMLEFT", 0, -4)
+	ConfigWindow.Offset = 1
+	
+	ConfigWindow.Widgets = {}
+	
+	ConfigWindow:EnableMouseWheel(true)
+	ConfigWindow:SetScript("OnMouseWheel", ConfigOnMouseWheel)
 	
 	ConfigWindow.Backdrop = ConfigWindow:CreateTexture(nil, "BORDER")
 	ConfigWindow.Backdrop:SetPoint("TOPLEFT", ConfigWindow, -1, 1)
@@ -1032,9 +1092,35 @@ local CreateCTAConfig = function()
 	ConfigWindow.Backdrop:SetPoint("TOPLEFT", Config, -4, 4)
 	ConfigWindow.Backdrop:SetPoint("BOTTOMRIGHT", ConfigWindow, 4, -4)
 	ConfigWindow.Backdrop:SetBackdrop(Outline)
-	ConfigWindow.Backdrop:SetBackdropColor(0.2, 0.2, 0.2)
+	ConfigWindow.Backdrop:SetBackdropColor(0.25, 0.25, 0.25)
 	ConfigWindow.Backdrop:SetBackdropBorderColor(0, 0, 0)
 	ConfigWindow.Backdrop:SetFrameStrata("LOW")
+	
+	-- Main header
+	local GeneralHeader = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
+	GeneralHeader:SetSize(188, 20)
+	
+	GeneralHeader.BG = GeneralHeader:CreateTexture(nil, "BORDER")
+	GeneralHeader.BG:SetTexture(BlankTex)
+	GeneralHeader.BG:SetVertexColor(0, 0, 0)
+	GeneralHeader.BG:SetPoint("TOPLEFT", GeneralHeader, 0, 0)
+	GeneralHeader.BG:SetPoint("BOTTOMRIGHT", GeneralHeader, 0, 0)
+	
+	GeneralHeader.Tex = GeneralHeader:CreateTexture(nil, "OVERLAY")
+	GeneralHeader.Tex:SetTexture(BarTex)
+	GeneralHeader.Tex:SetPoint("TOPLEFT", GeneralHeader, 1, -1)
+	GeneralHeader.Tex:SetPoint("BOTTOMRIGHT", GeneralHeader, -1, 1)
+	GeneralHeader.Tex:SetVertexColor(0.25, 0.25, 0.25)
+	
+	GeneralHeader.Text = GeneralHeader:CreateFontString(nil, "OVERLAY")
+	GeneralHeader.Text:SetFont(Font, 12)
+	GeneralHeader.Text:SetPoint("LEFT", GeneralHeader, 3, 0)
+	GeneralHeader.Text:SetJustifyH("LEFT")
+	GeneralHeader.Text:SetShadowColor(0, 0, 0)
+	GeneralHeader.Text:SetShadowOffset(1, -1)
+	GeneralHeader.Text:SetText(GENERAL)
+	
+	tinsert(ConfigWindow.Widgets, GeneralHeader)
 	
 	-- Update intervals
 	local UpdateIntOption = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
@@ -1051,7 +1137,7 @@ local CreateCTAConfig = function()
 	UpdateIntOption.Tex:SetTexture(BarTex)
 	UpdateIntOption.Tex:SetPoint("TOPLEFT", UpdateIntOption, 1, -1)
 	UpdateIntOption.Tex:SetPoint("BOTTOMRIGHT", UpdateIntOption, -1, 1)
-	UpdateIntOption.Tex:SetVertexColor(0.2, 0.2, 0.2)
+	UpdateIntOption.Tex:SetVertexColor(0.25, 0.25, 0.25)
 	
 	UpdateIntOption.Text = UpdateIntOption:CreateFontString(nil, "OVERLAY")
 	UpdateIntOption.Text:SetFont(Font, 12)
@@ -1088,6 +1174,8 @@ local CreateCTAConfig = function()
 		CallToArmsSettings.UpdateInterval = value
 	end
 	
+	tinsert(ConfigWindow.Widgets, UpdateIntOption)
+	
 	-- Window alpha
 	local WindowAlphaOption = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
 	WindowAlphaOption:SetSize(40, 20)
@@ -1103,7 +1191,7 @@ local CreateCTAConfig = function()
 	WindowAlphaOption.Tex:SetTexture(BarTex)
 	WindowAlphaOption.Tex:SetPoint("TOPLEFT", WindowAlphaOption, 1, -1)
 	WindowAlphaOption.Tex:SetPoint("BOTTOMRIGHT", WindowAlphaOption, -1, 1)
-	WindowAlphaOption.Tex:SetVertexColor(0.2, 0.2, 0.2)
+	WindowAlphaOption.Tex:SetVertexColor(0.25, 0.25, 0.25)
 	
 	WindowAlphaOption.Text = WindowAlphaOption:CreateFontString(nil, "OVERLAY")
 	WindowAlphaOption.Text:SetFont(Font, 12)
@@ -1141,9 +1229,11 @@ local CreateCTAConfig = function()
 		CallToArms:UpdateAlpha(value)
 	end
 	
+	tinsert(ConfigWindow.Widgets, WindowAlphaOption)
+	
 	ConfigWindow.Boxes = {}
 	
-	for i = 1, 4 do
+	for i = 1, 5 do
 		local Checkbox = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
 		Checkbox:SetSize(20, 20)
 		
@@ -1171,6 +1261,8 @@ local CreateCTAConfig = function()
 			Checkbox:SetPoint("TOPLEFT", ConfigWindow.Boxes[i-1], "BOTTOMLEFT", 0, -2)
 		end
 		
+		tinsert(ConfigWindow.Widgets, Checkbox)
+		
 		ConfigWindow.Boxes[i] = Checkbox
 	end
 	
@@ -1196,6 +1288,12 @@ local CreateCTAConfig = function()
 		ConfigWindow.Boxes[4].Tex:SetVertexColor(0, 0.8, 0)
 	else
 		ConfigWindow.Boxes[4].Tex:SetVertexColor(0.8, 0, 0)
+	end
+	
+	if Options.PlaySound then
+		ConfigWindow.Boxes[5].Tex:SetVertexColor(0, 0.8, 0)
+	else
+		ConfigWindow.Boxes[5].Tex:SetVertexColor(0.8, 0, 0)
 	end
 	
 	ConfigWindow.Boxes[1].Text:SetText("Announce bonuses beginning")
@@ -1272,11 +1370,46 @@ local CreateCTAConfig = function()
 		end
 	end)
 	
-	local Div = ConfigWindow.ButtonParent:CreateTexture(nil, "OVERLAY")
-	Div:SetSize(194, 1)
-	Div:SetPoint("TOP", ConfigWindow.ButtonParent, 0, -136)
-	Div:SetTexture(BlankTex)
-	Div:SetVertexColor(0, 0, 0)
+	ConfigWindow.Boxes[5].Text:SetText("Play sound")
+	ConfigWindow.Boxes[5]:SetScript("OnMouseUp", function(self)
+		if Options.PlaySound then
+			CallToArmsSettings.PlaySound = false
+			Options.PlaySound = false
+			
+			self.Tex:SetVertexColor(0.8, 0, 0)
+		else
+			CallToArmsSettings.PlaySound = true
+			Options.PlaySound = true
+			
+			self.Tex:SetVertexColor(0, 0.8, 0)
+		end
+	end)
+	
+	-- Modules header
+	local ModulesHeader = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
+	ModulesHeader:SetSize(188, 20)
+	
+	ModulesHeader.BG = ModulesHeader:CreateTexture(nil, "BORDER")
+	ModulesHeader.BG:SetTexture(BlankTex)
+	ModulesHeader.BG:SetVertexColor(0, 0, 0)
+	ModulesHeader.BG:SetPoint("TOPLEFT", ModulesHeader, 0, 0)
+	ModulesHeader.BG:SetPoint("BOTTOMRIGHT", ModulesHeader, 0, 0)
+	
+	ModulesHeader.Tex = ModulesHeader:CreateTexture(nil, "OVERLAY")
+	ModulesHeader.Tex:SetTexture(BarTex)
+	ModulesHeader.Tex:SetPoint("TOPLEFT", ModulesHeader, 1, -1)
+	ModulesHeader.Tex:SetPoint("BOTTOMRIGHT", ModulesHeader, -1, 1)
+	ModulesHeader.Tex:SetVertexColor(0.25, 0.25, 0.25)
+	
+	ModulesHeader.Text = ModulesHeader:CreateFontString(nil, "OVERLAY")
+	ModulesHeader.Text:SetFont(Font, 12)
+	ModulesHeader.Text:SetPoint("LEFT", ModulesHeader, 3, 0)
+	ModulesHeader.Text:SetJustifyH("LEFT")
+	ModulesHeader.Text:SetShadowColor(0, 0, 0)
+	ModulesHeader.Text:SetShadowOffset(1, -1)
+	ModulesHeader.Text:SetText(DUNGEONS)
+	
+	tinsert(ConfigWindow.Widgets, ModulesHeader)
 	
 	local ModuleEnables = {}
 	
@@ -1302,7 +1435,7 @@ local CreateCTAConfig = function()
 		Checkbox.Text = Checkbox:CreateFontString(nil, "OVERLAY")
 		Checkbox.Text:SetFont(Font, 12)
 		Checkbox.Text:SetPoint("LEFT", Checkbox, "RIGHT", 3, 0)
-		Checkbox.Text:SetSize(ConfigWindow:GetWidth() - 29, 12)
+		Checkbox.Text:SetSize(ConfigWindow:GetWidth() - 49, 12)
 		Checkbox.Text:SetJustifyH("LEFT")
 		Checkbox.Text:SetShadowColor(0, 0, 0)
 		Checkbox.Text:SetShadowOffset(1, -1)
@@ -1340,10 +1473,58 @@ local CreateCTAConfig = function()
 			Checkbox:SetPoint("TOPLEFT", ModuleEnables[i-1], "BOTTOMLEFT", 0, -2)
 		end
 		
+		tinsert(ConfigWindow.Widgets, Checkbox)
+		
 		ModuleEnables[i] = Checkbox
 	end
 	
-	local Height = ((6 + CallToArms.NumHeaders) * 22) + 9
+	-- Scroll bar
+	ConfigWindow.ScrollBar = CreateFrame("Slider", nil, ConfigWindow.ButtonParent)
+	ConfigWindow.ScrollBar:SetPoint("TOPRIGHT", ConfigWindow, -3, -3)
+	ConfigWindow.ScrollBar:SetPoint("BOTTOMRIGHT", ConfigWindow, -3, 3)
+	ConfigWindow.ScrollBar:SetWidth(14)
+	ConfigWindow.ScrollBar:SetThumbTexture(BlankTex)
+	ConfigWindow.ScrollBar:SetOrientation("VERTICAL")
+	ConfigWindow.ScrollBar:SetValueStep(1)
+	ConfigWindow.ScrollBar:SetBackdrop(Outline)
+	ConfigWindow.ScrollBar:SetBackdropColor(0.25, 0.25, 0.25)
+	ConfigWindow.ScrollBar:SetBackdropBorderColor(0, 0, 0)
+	ConfigWindow.ScrollBar:SetMinMaxValues(1, (#ConfigWindow.Widgets - (MAX_SHOWN - 1)))
+	ConfigWindow.ScrollBar:SetValue(1)
+	ConfigWindow.ScrollBar:EnableMouse(true)
+	--ConfigWindow.ScrollBar:SetScript("OnMouseWheel", DropdownScrollBarOnMouseWheel)
+	ConfigWindow.ScrollBar:SetScript("OnValueChanged", ScrollBarOnValueChanged)
+	ConfigWindow.ScrollBar.Parent = ConfigWindow
+	
+	ConfigWindow.ScrollBar:SetFrameStrata("HIGH")
+	ConfigWindow.ScrollBar:SetFrameLevel(22)
+	
+	local Thumb = ConfigWindow.ScrollBar:GetThumbTexture() 
+	Thumb:SetSize(14, 20)
+	Thumb:SetTexture(BarTex)
+	Thumb:SetVertexColor(0, 0, 0)
+	
+	ConfigWindow.ScrollBar.NewTexture = ConfigWindow.ScrollBar:CreateTexture(nil, "BORDER")
+	ConfigWindow.ScrollBar.NewTexture:SetPoint("TOPLEFT", Thumb, 0, 0)
+	ConfigWindow.ScrollBar.NewTexture:SetPoint("BOTTOMRIGHT", Thumb, 0, 0)
+	ConfigWindow.ScrollBar.NewTexture:SetTexture(BlankTex)
+	ConfigWindow.ScrollBar.NewTexture:SetVertexColor(0, 0, 0)
+	
+	ConfigWindow.ScrollBar.NewTexture2 = ConfigWindow.ScrollBar:CreateTexture(nil, "OVERLAY")
+	ConfigWindow.ScrollBar.NewTexture2:SetPoint("TOPLEFT", ConfigWindow.ScrollBar.NewTexture, 1, -1)
+	ConfigWindow.ScrollBar.NewTexture2:SetPoint("BOTTOMRIGHT", ConfigWindow.ScrollBar.NewTexture, -1, 1)
+	ConfigWindow.ScrollBar.NewTexture2:SetTexture(BarTex)
+	ConfigWindow.ScrollBar.NewTexture2:SetVertexColor(0.2, 0.2, 0.2)
+	
+	local Height
+	
+	if (CallToArms.NumHeaders > 6) then
+		Height = (MAX_SHOWN * 22) + 4
+		
+		Scroll(ConfigWindow)
+	else
+		Height = ((6 + CallToArms.NumHeaders) * 22) + 4
+	end
 	
 	ConfigWindow:SetHeight(Height)
 end
