@@ -41,6 +41,7 @@ local Rename = {
 	[744] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Burning Crusade) --> Timewalking
 	[995] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Wrath of the Lich King) --> Timewalking
 	[1453] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Mists of Pandaria) --> Timewalking
+	[1971] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Warlords of Draenor) --> Timewalking
 	[1670] = LFG_TYPE_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Dungeon
 	[1671] = LFG_TYPE_HEROIC_DUNGEON, -- Random Heroic (Battle for Azeroth) --> Heroic Dungeon
 }
@@ -254,6 +255,11 @@ function CallToArms:CreateModules()
 	end
 	
 	for i = 1, CallToArms.NumHeaders do
+		if (not CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName]) then -- This should fix new modules not loading unless toggled. If we don't have a setting for this dungeon, then enable it by default.
+			CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] = true
+			Options["Enable"..CallToArms.HeadersByIndex[i].DungeonName] = true
+		end
+	
 		if (Options["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == true) then
 			CallToArms.HeadersByIndex[i]:Enable()
 		else
