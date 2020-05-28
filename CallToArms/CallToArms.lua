@@ -628,18 +628,24 @@ local OnClick = function(self, button)
 			print(format(InvalidRole, TANK))
 			
 			return
+		else
+			SetLFGRoles(Leader, true, false, false)
 		end
 	elseif (self.RoleID == 2) then
 		if (ForHealer and not RoleMapByClass[Class][self.RoleID]) then
 			print(format(InvalidRole, HEALER))
 			
 			return
+		else
+			SetLFGRoles(Leader, false, true, false)
 		end
+	else
+		SetLFGRoles(Leader, false, false, true)
 	end
 	
 	UpdateQueueStatus(self.DungeonID)
 	
-	SetLFGRoles(Leader, ForTank, ForHealer, ForDamage)
+	--SetLFGRoles(Leader, ForTank, ForHealer, ForDamage)
 	SetLFGDungeon(self.SubTypeID, self.DungeonID)
 	JoinLFG(self.SubTypeID)
 end
