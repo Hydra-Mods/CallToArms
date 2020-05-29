@@ -661,11 +661,47 @@ local OnEnter = function(self)
 			GameTooltip:ClearAllPoints()
 			GameTooltip:SetPoint("TOP", self, "BOTTOM", 0, -8)
 			
+			GameTooltip:AddLine(BONUS_REWARDS)
+			GameTooltip:AddLine(" ")
+			
 			for j = 1, ItemCount do
-				local Link = GetLFGDungeonShortageRewardLink(self.DungeonID, i, j)
+				local Name, Icon, NumRewards, _, RewardType, ID, Quality = GetLFGDungeonShortageRewardInfo(self.DungeonID, i, j)
 				
-				if Link then
-					GameTooltip:SetHyperlink(Link)
+				if (RewardType == "misc") then
+					GameTooltip:AddLine(REWARD_ITEMS_ONLY)
+					
+					local DoneToday, Money, MoneyMod, XP, XPMod, NumRewards, SpellID = GetLFGDungeonRewards(self.DungeonID)
+					
+					if (XP > 0) then
+						GameTooltip:AddLine(format(GAIN_EXPERIENCE, XP))
+					end
+					
+					if (Money > 0) then
+						SetTooltipMoney(GameTooltip, Money, nil)
+					end
+				elseif (RewardType == "reward") then
+					GameTooltip:SetLFGDungeonReward(self.DungeonID, j)
+				elseif (RewardType == "shortage") then
+					GameTooltip:SetLFGDungeonShortageReward(self.DungeonID, j, i)
+				elseif (RewardType == "item") then
+					local Link = GetLFGDungeonShortageRewardLink(self.DungeonID, i, j)
+					
+					if Link then
+						if (NumRewards > 1) then
+							GameTooltip:AddLine(format("%s %s", NumRewards, Link))
+						else
+							GameTooltip:AddLine(Link)
+						end
+					end
+				elseif (RewardType == "currency") then
+					local CurrencyNum = select(3, CurrencyContainerUtil.GetCurrencyContainerInfo(ID, NumRewards, Name, Icon, Quality))
+					local Link = GetCurrencyLink(ID, CurrencyNum)
+					local CurrencyName = GetCurrencyInfo(ID)
+					local Hex = ITEM_QUALITY_COLORS[Quality].hex or "ffffff" -- F's in chat.
+					
+					if CurrencyName then
+						GameTooltip:AddLine(format("%s %s%s|r", NumRewards, Hex, CurrencyName), 1, 1, 1)
+					end
 				end
 			end
 			
