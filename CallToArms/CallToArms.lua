@@ -651,7 +651,7 @@ local OnClick = function(self, button)
 end
 
 local OnEnter = function(self)
-	self.MouseOver:SetAlpha(1)
+	self.MouseOver:SetAlpha(0.5)
 	
 	for i = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
 		local Eligable, ForTank, ForHealer, ForDamage, ItemCount = GetLFGRoleShortageRewards(self.DungeonID, i)
