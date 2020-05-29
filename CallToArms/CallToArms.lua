@@ -255,11 +255,10 @@ function CallToArms:CreateModules()
 	end
 	
 	for i = 1, CallToArms.NumHeaders do
-		if (not CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName]) then -- This should fix new modules not loading unless toggled. If we don't have a setting for this dungeon, then enable it by default.
+		if (CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == nil) then -- This should fix new modules not loading unless toggled. If we don't have a setting for this dungeon, then enable it by default.
 			CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] = true
-			Options["Enable"..CallToArms.HeadersByIndex[i].DungeonName] = true
 		end
-	
+		
 		if (Options["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == true) then
 			CallToArms.HeadersByIndex[i]:Enable()
 		else
@@ -697,7 +696,7 @@ local OnEnter = function(self)
 					local CurrencyNum = select(3, CurrencyContainerUtil.GetCurrencyContainerInfo(ID, NumRewards, Name, Icon, Quality))
 					local Link = GetCurrencyLink(ID, CurrencyNum)
 					local CurrencyName = GetCurrencyInfo(ID)
-					local Hex = ITEM_QUALITY_COLORS[Quality].hex or "ffffff" -- F's in chat.
+					local Hex = ITEM_QUALITY_COLORS[Quality].hex or "ffffff"
 					
 					if CurrencyName then
 						GameTooltip:AddLine(format("%s %s%s|r", NumRewards, Hex, CurrencyName), 1, 1, 1)
@@ -960,6 +959,10 @@ function CallToArms:NewModule(id, name, subtypeid)
 		end
 		
 		Header[i] = Bar
+	end
+	
+	if (CallToArmsSettings["Enable"..name] == false) then
+		Header:Disable()
 	end
 	
 	self.NumHeaders = self.NumHeaders + 1
@@ -1488,10 +1491,6 @@ local CreateCTAConfig = function()
 		Checkbox.Text:SetShadowColor(0, 0, 0)
 		Checkbox.Text:SetShadowOffset(1, -1)
 		Checkbox.Text:SetText(DungeonName)
-		
-		if (CallToArmsSettings["Enable"..DungeonName] == nil) then
-			CallToArmsSettings["Enable"..DungeonName] = true
-		end
 		
 		if (CallToArmsSettings["Enable"..DungeonName] == true) then
 			Checkbox.Tex:SetVertexColor(0, 0.8, 0)
