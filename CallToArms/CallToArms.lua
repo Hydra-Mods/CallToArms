@@ -624,7 +624,7 @@ local OnClick = function(self, button)
 	-- Check if we can perform this role. A generic error message would come up anyways, but we'll make our own.
 	if (self.RoleID == 1) then
 		if (ForTank and not RoleMapByClass[Class][self.RoleID]) then
-			print(format(InvalidRole, TANK))
+			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
 			
 			return
 		else
@@ -632,7 +632,7 @@ local OnClick = function(self, button)
 		end
 	elseif (self.RoleID == 2) then
 		if (ForHealer and not RoleMapByClass[Class][self.RoleID]) then
-			print(format(InvalidRole, HEALER))
+			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
 			
 			return
 		else
