@@ -620,7 +620,7 @@ local OnClick = function(self, button)
 	
 	local Eligable, ForTank, ForHealer, ForDamage = GetLFGRoleShortageRewards(self.DungeonID, LFG_ROLE_SHORTAGE_RARE)
 	local Leader = GetLFGRoles()
-	LFDQueueFrame_GetRoles()
+	
 	-- Check if we can perform this role. A generic error message would come up anyways, but we'll make our own.
 	if (self.RoleID == 1) then
 		if (ForTank and not RoleMapByClass[Class][self.RoleID]) then
