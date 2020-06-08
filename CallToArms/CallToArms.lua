@@ -34,7 +34,7 @@ local CombatTime = 0
 local Level = UnitLevel("player")
 local ID, Name, SubType, Min, Max, Timewalking, _
 
-local RolesName = {TANK, HEALER, DAMAGER}
+local RoleNames = {TANK, HEALER, DAMAGER}
 local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
 
 local Rename = {
@@ -492,7 +492,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Options.AnnounceStart then
-				print(format(StartMessage, self.DungeonName, RolesName[1]))
+				print(format(StartMessage, self.DungeonName, RoleNames[1]))
 			end
 			
 			self.AnnounceTank = false
@@ -504,7 +504,7 @@ local Update = function(self)
 			
 			if Options.AnnounceEndings then
 				if Options.AnnounceStart then
-					print(format(EndedMessage, self.DungeonName, RolesName[1]))
+					print(format(EndedMessage, self.DungeonName, RoleNames[1]))
 				end
 			end
 			
@@ -523,7 +523,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Options.AnnounceStart then
-				print(format(StartMessage, self.DungeonName, RolesName[2]))
+				print(format(StartMessage, self.DungeonName, RoleNames[2]))
 			end
 			
 			self.AnnounceHealer = false
@@ -535,7 +535,7 @@ local Update = function(self)
 			
 			if Options.AnnounceEndings then
 				if Options.AnnounceStart then
-					print(format(EndedMessage, self.DungeonName, RolesName[2]))
+					print(format(EndedMessage, self.DungeonName, RoleNames[2]))
 				end
 			end
 			
@@ -550,7 +550,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Options.AnnounceStart then
-				print(format(StartMessage, self.DungeonName, RolesName[3]))
+				print(format(StartMessage, self.DungeonName, RoleNames[3]))
 			end
 			
 			self.AnnounceDPS = false
@@ -562,7 +562,7 @@ local Update = function(self)
 			
 			if Options.AnnounceEndings then
 				if Options.AnnounceStart then
-					print(format(EndedMessage, self.DungeonName, RolesName[3]))
+					print(format(EndedMessage, self.DungeonName, RoleNames[3]))
 				end
 			end
 			
@@ -620,7 +620,7 @@ local OnClick = function(self, button)
 	
 	local Eligable, ForTank, ForHealer, ForDamage = GetLFGRoleShortageRewards(self.DungeonID, LFG_ROLE_SHORTAGE_RARE)
 	local Leader = GetLFGRoles()
-	
+	LFDQueueFrame_GetRoles()
 	-- Check if we can perform this role. A generic error message would come up anyways, but we'll make our own.
 	if (self.RoleID == 1) then
 		if (ForTank and not RoleMapByClass[Class][self.RoleID]) then
@@ -644,7 +644,6 @@ local OnClick = function(self, button)
 	
 	UpdateQueueStatus(self.DungeonID)
 	
-	--SetLFGRoles(Leader, ForTank, ForHealer, ForDamage)
 	SetLFGDungeon(self.SubTypeID, self.DungeonID)
 	JoinLFG(self.SubTypeID)
 end
@@ -943,7 +942,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 		Bar.Text:SetJustifyH("LEFT")
 		Bar.Text:SetShadowColor(0, 0, 0)
 		Bar.Text:SetShadowOffset(1, -1)
-		Bar.Text:SetText(RolesName[i])
+		Bar.Text:SetText(RoleNames[i])
 		Bar.Text:SetTextColor(0.92, 0.92, 0.92)
 		
 		Bar:RegisterForClicks("AnyUp")
