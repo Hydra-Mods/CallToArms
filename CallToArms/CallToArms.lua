@@ -1,3 +1,29 @@
+local format = format
+local print = print
+local pairs = pairs
+local GetTime = GetTime
+local InCombatLockdown = InCombatLockdown
+local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
+local GetLFGRoleShortageRewards = GetLFGRoleShortageRewards
+local LFG_ROLE_NUM_SHORTAGE_TYPES = LFG_ROLE_NUM_SHORTAGE_TYPES
+local LFD_MAX_SHOWN_LEVEL_DIFF = LFD_MAX_SHOWN_LEVEL_DIFF -- 15, LFD uses this to filter level range for dungeons
+
+local Class = select(2, UnitClass("player"))
+local Level = UnitLevel("player")
+local RoleNames = {TANK, HEALER, DAMAGER}
+local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
+local UpdateInt = 45
+local CombatTime = 0
+local ID, Name, SubType, Min, Max, Timewalking, _
+
+local BlankTexture = "Interface\\AddOns\\CallToArms\\vUIBlank.tga"
+local BarTexture = "Interface\\AddOns\\CallToArms\\vUI4.tga"
+local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
+
+local StartMessage = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+local EndedMessage = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+local InvalidRole = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+
 local Options = {}
 
 Options.AnnounceStart = false -- Announce when a bonus queue begins
@@ -10,33 +36,6 @@ Options.MinimizeInGroup = false -- Automatically minimize while in groups
 Options.PlaySound = true -- Play a sound when a new queue appears
 Options.Minimized = false
 
-local format = format
-local print = print
-local pairs = pairs
-local GetTime = GetTime
-local InCombatLockdown = InCombatLockdown
-local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
-local GetLFGRoleShortageRewards = GetLFGRoleShortageRewards
-local LFG_ROLE_NUM_SHORTAGE_TYPES = LFG_ROLE_NUM_SHORTAGE_TYPES
-local LFG_ROLE_SHORTAGE_RARE = LFG_ROLE_SHORTAGE_RARE
-local LE_LFG_CATEGORY_LFD = LE_LFG_CATEGORY_LFD
-local LE_LFG_CATEGORY_LFR = LE_LFG_CATEGORY_LFR
-local LE_LFG_CATEGORY_RF = LE_LFG_CATEGORY_RF
-local ClearAllLFGDungeons = ClearAllLFGDungeons
-local SetLFGDungeon = SetLFGDungeon
-local GetLFGRoles = GetLFGRoles
-local SetLFGRoles = SetLFGRoles
-local JoinLFG = JoinLFG
-local LFD_MAX_SHOWN_LEVEL_DIFF = LFD_MAX_SHOWN_LEVEL_DIFF -- 15, LFD uses this to filter level range for dungeons
-
-local UpdateInt = 45
-local CombatTime = 0
-local Level = UnitLevel("player")
-local ID, Name, SubType, Min, Max, Timewalking, _
-
-local RoleNames = {TANK, HEALER, DAMAGER}
-local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
-
 local Rename = {
 	[744] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Burning Crusade) --> Timewalking
 	[995] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Wrath of the Lich King) --> Timewalking
@@ -45,8 +44,6 @@ local Rename = {
 	[1670] = LFG_TYPE_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Dungeon
 	[1671] = LFG_TYPE_HEROIC_DUNGEON, -- Random Heroic (Battle for Azeroth) --> Heroic Dungeon
 }
-
-local Class = select(2, UnitClass("player"))
 
 local RoleMapByClass = {-- CanTank, CanHeal
 	["DEATHKNIGHT"] = {true, false},
@@ -63,17 +60,9 @@ local RoleMapByClass = {-- CanTank, CanHeal
 	["WARRIOR"] =     {true, false},
 }
 
-local BlankTex = "Interface\\AddOns\\CallToArms\\vUIBlank.tga"
-local BarTex = "Interface\\AddOns\\CallToArms\\vUI4.tga"
-local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
-
-local StartMessage = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
-local EndedMessage = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
-local InvalidRole = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
-
 local Outline = {
-	bgFile = BlankTex,
-	edgeFile = BlankTex,
+	bgFile = BlankTexture,
+	edgeFile = BlankTexture,
 	edgeSize = 1,
 	insets = {top = 0, left = 0, bottom = 0, right = 0},
 }
@@ -97,13 +86,13 @@ CallToArms.HeadersByIndex = {}
 CallToArms.BG = CallToArms:CreateTexture(nil, "BORDER")
 CallToArms.BG:SetPoint("TOPLEFT", CallToArms, -1, 1)
 CallToArms.BG:SetPoint("BOTTOMRIGHT", CallToArms, 1, -1)
-CallToArms.BG:SetTexture(BlankTex)
+CallToArms.BG:SetTexture(BlankTexture)
 CallToArms.BG:SetVertexColor(0, 0, 0)
 
 CallToArms.Texture = CallToArms:CreateTexture(nil, "ARTWORK")
 CallToArms.Texture:SetPoint("TOPLEFT", CallToArms, 0, 0)
 CallToArms.Texture:SetPoint("BOTTOMRIGHT", CallToArms, 0, 0)
-CallToArms.Texture:SetTexture(BarTex)
+CallToArms.Texture:SetTexture(BarTexture)
 CallToArms.Texture:SetVertexColor(0.25, 0.25, 0.25)
 
 CallToArms.Text = CallToArms:CreateFontString(nil, "OVERLAY")
@@ -732,7 +721,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 	Header.Texture = Header:CreateTexture(nil, "ARTWORK")
 	Header.Texture:SetPoint("TOPLEFT", Header, 1, -1)
 	Header.Texture:SetPoint("BOTTOMRIGHT", Header, -1, 1)
-	Header.Texture:SetTexture(BarTex)
+	Header.Texture:SetTexture(BarTexture)
 	Header.Texture:SetVertexColor(0.25, 0.25, 0.25)
 	
 	Header.Text = Header:CreateFontString(nil, "OVERLAY")
@@ -857,13 +846,13 @@ function CallToArms:NewModule(id, name, subtypeid)
 		Bar.Texture = Bar:CreateTexture(nil, "ARTWORK")
 		Bar.Texture:SetPoint("TOPLEFT", Bar, 1, -1)
 		Bar.Texture:SetPoint("BOTTOMRIGHT", Bar, -1, 1)
-		Bar.Texture:SetTexture(BlankTex)
+		Bar.Texture:SetTexture(BlankTexture)
 		Bar.Texture:SetVertexColor(0.3, 0.3, 0.3)
 		
 		Bar.IconBG = Bar:CreateTexture(nil, "ARTWORK")
 		Bar.IconBG:SetSize(20, 20)
 		Bar.IconBG:SetPoint("LEFT", Bar, "LEFT", 0, 0)
-		Bar.IconBG:SetTexture(BlankTex)
+		Bar.IconBG:SetTexture(BlankTexture)
 		Bar.IconBG:SetVertexColor(0, 0, 0)
 		
 		Bar.Icon = Bar:CreateTexture(nil, "OVERLAY")
@@ -875,14 +864,14 @@ function CallToArms:NewModule(id, name, subtypeid)
 		Bar.MouseOver = Bar:CreateTexture(nil, "OVERLAY")
 		Bar.MouseOver:SetSize(111, 18)
 		Bar.MouseOver:SetPoint("RIGHT", Bar, "RIGHT", -1, 0)
-		Bar.MouseOver:SetTexture(BarTex)
+		Bar.MouseOver:SetTexture(BarTexture)
 		Bar.MouseOver:SetVertexColor(0.8, 0.8, 0.8, 0.5)
 		Bar.MouseOver:SetAlpha(0)
 		
 		Bar.Flash = Bar:CreateTexture(nil, "OVERLAY")
 		Bar.Flash:SetSize(130, 18)
 		Bar.Flash:SetPoint("CENTER", Bar, "CENTER", 0, 0)
-		Bar.Flash:SetTexture(BarTex)
+		Bar.Flash:SetTexture(BarTexture)
 		Bar.Flash:SetVertexColor(0.8, 0.8, 0.8)
 		Bar.Flash:SetAlpha(0)
 		
@@ -1083,13 +1072,13 @@ local CreateCTAConfig = function()
 	Config.BG = Config:CreateTexture(nil, "BORDER")
 	Config.BG:SetPoint("TOPLEFT", Config, -1, 1)
 	Config.BG:SetPoint("BOTTOMRIGHT", Config, 1, -1)
-	Config.BG:SetTexture(BlankTex)
+	Config.BG:SetTexture(BlankTexture)
 	Config.BG:SetVertexColor(0, 0, 0)
 	
 	Config.Texture = Config:CreateTexture(nil, "OVERLAY")
 	Config.Texture:SetPoint("TOPLEFT", Config, 0, 0)
 	Config.Texture:SetPoint("BOTTOMRIGHT", Config, 0, 0)
-	Config.Texture:SetTexture(BarTex)
+	Config.Texture:SetTexture(BarTexture)
 	Config.Texture:SetVertexColor(0.25, 0.25, 0.25)
 	
 	Config.Text = Config:CreateFontString(nil, "OVERLAY")
@@ -1124,12 +1113,12 @@ local CreateCTAConfig = function()
 	ConfigWindow.Backdrop = ConfigWindow:CreateTexture(nil, "BORDER")
 	ConfigWindow.Backdrop:SetPoint("TOPLEFT", ConfigWindow, -1, 1)
 	ConfigWindow.Backdrop:SetPoint("BOTTOMRIGHT", ConfigWindow, 1, -1)
-	ConfigWindow.Backdrop:SetTexture(BlankTex)
+	ConfigWindow.Backdrop:SetTexture(BlankTexture)
 	ConfigWindow.Backdrop:SetVertexColor(0, 0, 0)
 	
 	ConfigWindow.Inside = ConfigWindow:CreateTexture(nil, "BORDER")
 	ConfigWindow.Inside:SetAllPoints()
-	ConfigWindow.Inside:SetTexture(BlankTex)
+	ConfigWindow.Inside:SetTexture(BlankTexture)
 	ConfigWindow.Inside:SetVertexColor(0.3, 0.3, 0.3)
 	
 	ConfigWindow.ButtonParent = CreateFrame("Frame", nil, ConfigWindow)
@@ -1151,13 +1140,13 @@ local CreateCTAConfig = function()
 	GeneralHeader:SetSize(188, 20)
 	
 	GeneralHeader.BG = GeneralHeader:CreateTexture(nil, "BORDER")
-	GeneralHeader.BG:SetTexture(BlankTex)
+	GeneralHeader.BG:SetTexture(BlankTexture)
 	GeneralHeader.BG:SetVertexColor(0, 0, 0)
 	GeneralHeader.BG:SetPoint("TOPLEFT", GeneralHeader, 0, 0)
 	GeneralHeader.BG:SetPoint("BOTTOMRIGHT", GeneralHeader, 0, 0)
 	
 	GeneralHeader.Tex = GeneralHeader:CreateTexture(nil, "OVERLAY")
-	GeneralHeader.Tex:SetTexture(BarTex)
+	GeneralHeader.Tex:SetTexture(BarTexture)
 	GeneralHeader.Tex:SetPoint("TOPLEFT", GeneralHeader, 1, -1)
 	GeneralHeader.Tex:SetPoint("BOTTOMRIGHT", GeneralHeader, -1, 1)
 	GeneralHeader.Tex:SetVertexColor(0.25, 0.25, 0.25)
@@ -1178,13 +1167,13 @@ local CreateCTAConfig = function()
 	UpdateIntOption:SetPoint("TOPLEFT", ConfigWindow.ButtonParent, 3, -3)
 	
 	UpdateIntOption.BG = UpdateIntOption:CreateTexture(nil, "BORDER")
-	UpdateIntOption.BG:SetTexture(BlankTex)
+	UpdateIntOption.BG:SetTexture(BlankTexture)
 	UpdateIntOption.BG:SetVertexColor(0, 0, 0)
 	UpdateIntOption.BG:SetPoint("TOPLEFT", UpdateIntOption, 0, 0)
 	UpdateIntOption.BG:SetPoint("BOTTOMRIGHT", UpdateIntOption, 0, 0)
 	
 	UpdateIntOption.Tex = UpdateIntOption:CreateTexture(nil, "OVERLAY")
-	UpdateIntOption.Tex:SetTexture(BarTex)
+	UpdateIntOption.Tex:SetTexture(BarTexture)
 	UpdateIntOption.Tex:SetPoint("TOPLEFT", UpdateIntOption, 1, -1)
 	UpdateIntOption.Tex:SetPoint("BOTTOMRIGHT", UpdateIntOption, -1, 1)
 	UpdateIntOption.Tex:SetVertexColor(0.25, 0.25, 0.25)
@@ -1232,13 +1221,13 @@ local CreateCTAConfig = function()
 	WindowAlphaOption:SetPoint("TOPLEFT", UpdateIntOption, "BOTTOMLEFT", 0, -2)
 	
 	WindowAlphaOption.BG = WindowAlphaOption:CreateTexture(nil, "BORDER")
-	WindowAlphaOption.BG:SetTexture(BlankTex)
+	WindowAlphaOption.BG:SetTexture(BlankTexture)
 	WindowAlphaOption.BG:SetVertexColor(0, 0, 0)
 	WindowAlphaOption.BG:SetPoint("TOPLEFT", WindowAlphaOption, 0, 0)
 	WindowAlphaOption.BG:SetPoint("BOTTOMRIGHT", WindowAlphaOption, 0, 0)
 	
 	WindowAlphaOption.Tex = WindowAlphaOption:CreateTexture(nil, "OVERLAY")
-	WindowAlphaOption.Tex:SetTexture(BarTex)
+	WindowAlphaOption.Tex:SetTexture(BarTexture)
 	WindowAlphaOption.Tex:SetPoint("TOPLEFT", WindowAlphaOption, 1, -1)
 	WindowAlphaOption.Tex:SetPoint("BOTTOMRIGHT", WindowAlphaOption, -1, 1)
 	WindowAlphaOption.Tex:SetVertexColor(0.25, 0.25, 0.25)
@@ -1288,13 +1277,13 @@ local CreateCTAConfig = function()
 		Checkbox:SetSize(20, 20)
 		
 		Checkbox.BG = Checkbox:CreateTexture(nil, "BORDER")
-		Checkbox.BG:SetTexture(BlankTex)
+		Checkbox.BG:SetTexture(BlankTexture)
 		Checkbox.BG:SetVertexColor(0, 0, 0)
 		Checkbox.BG:SetPoint("TOPLEFT", Checkbox, 0, 0)
 		Checkbox.BG:SetPoint("BOTTOMRIGHT", Checkbox, 0, 0)
 		
 		Checkbox.Tex = Checkbox:CreateTexture(nil, "OVERLAY")
-		Checkbox.Tex:SetTexture(BarTex)
+		Checkbox.Tex:SetTexture(BarTexture)
 		Checkbox.Tex:SetPoint("TOPLEFT", Checkbox, 1, -1)
 		Checkbox.Tex:SetPoint("BOTTOMRIGHT", Checkbox, -1, 1)
 		
@@ -1440,13 +1429,13 @@ local CreateCTAConfig = function()
 	ModulesHeader:SetSize(188, 20)
 	
 	ModulesHeader.BG = ModulesHeader:CreateTexture(nil, "BORDER")
-	ModulesHeader.BG:SetTexture(BlankTex)
+	ModulesHeader.BG:SetTexture(BlankTexture)
 	ModulesHeader.BG:SetVertexColor(0, 0, 0)
 	ModulesHeader.BG:SetPoint("TOPLEFT", ModulesHeader, 0, 0)
 	ModulesHeader.BG:SetPoint("BOTTOMRIGHT", ModulesHeader, 0, 0)
 	
 	ModulesHeader.Tex = ModulesHeader:CreateTexture(nil, "OVERLAY")
-	ModulesHeader.Tex:SetTexture(BarTex)
+	ModulesHeader.Tex:SetTexture(BarTexture)
 	ModulesHeader.Tex:SetPoint("TOPLEFT", ModulesHeader, 1, -1)
 	ModulesHeader.Tex:SetPoint("BOTTOMRIGHT", ModulesHeader, -1, 1)
 	ModulesHeader.Tex:SetVertexColor(0.25, 0.25, 0.25)
@@ -1472,13 +1461,13 @@ local CreateCTAConfig = function()
 		Checkbox.Index = i
 		
 		Checkbox.BG = Checkbox:CreateTexture(nil, "BORDER")
-		Checkbox.BG:SetTexture(BlankTex)
+		Checkbox.BG:SetTexture(BlankTexture)
 		Checkbox.BG:SetVertexColor(0, 0, 0)
 		Checkbox.BG:SetPoint("TOPLEFT", Checkbox, 0, 0)
 		Checkbox.BG:SetPoint("BOTTOMRIGHT", Checkbox, 0, 0)
 		
 		Checkbox.Tex = Checkbox:CreateTexture(nil, "OVERLAY")
-		Checkbox.Tex:SetTexture(BarTex)
+		Checkbox.Tex:SetTexture(BarTexture)
 		Checkbox.Tex:SetPoint("TOPLEFT", Checkbox, 1, -1)
 		Checkbox.Tex:SetPoint("BOTTOMRIGHT", Checkbox, -1, 1)
 		
@@ -1529,7 +1518,7 @@ local CreateCTAConfig = function()
 	ConfigWindow.ScrollBar:SetPoint("TOPRIGHT", ConfigWindow, -3, -3)
 	ConfigWindow.ScrollBar:SetPoint("BOTTOMRIGHT", ConfigWindow, -3, 3)
 	ConfigWindow.ScrollBar:SetWidth(14)
-	ConfigWindow.ScrollBar:SetThumbTexture(BlankTex)
+	ConfigWindow.ScrollBar:SetThumbTexture(BlankTexture)
 	ConfigWindow.ScrollBar:SetOrientation("VERTICAL")
 	ConfigWindow.ScrollBar:SetValueStep(1)
 	ConfigWindow.ScrollBar:SetBackdrop(Outline)
@@ -1547,19 +1536,19 @@ local CreateCTAConfig = function()
 	
 	local Thumb = ConfigWindow.ScrollBar:GetThumbTexture() 
 	Thumb:SetSize(14, 20)
-	Thumb:SetTexture(BarTex)
+	Thumb:SetTexture(BarTexture)
 	Thumb:SetVertexColor(0, 0, 0)
 	
 	ConfigWindow.ScrollBar.NewTexture = ConfigWindow.ScrollBar:CreateTexture(nil, "BORDER")
 	ConfigWindow.ScrollBar.NewTexture:SetPoint("TOPLEFT", Thumb, 0, 0)
 	ConfigWindow.ScrollBar.NewTexture:SetPoint("BOTTOMRIGHT", Thumb, 0, 0)
-	ConfigWindow.ScrollBar.NewTexture:SetTexture(BlankTex)
+	ConfigWindow.ScrollBar.NewTexture:SetTexture(BlankTexture)
 	ConfigWindow.ScrollBar.NewTexture:SetVertexColor(0, 0, 0)
 	
 	ConfigWindow.ScrollBar.NewTexture2 = ConfigWindow.ScrollBar:CreateTexture(nil, "OVERLAY")
 	ConfigWindow.ScrollBar.NewTexture2:SetPoint("TOPLEFT", ConfigWindow.ScrollBar.NewTexture, 1, -1)
 	ConfigWindow.ScrollBar.NewTexture2:SetPoint("BOTTOMRIGHT", ConfigWindow.ScrollBar.NewTexture, -1, 1)
-	ConfigWindow.ScrollBar.NewTexture2:SetTexture(BarTex)
+	ConfigWindow.ScrollBar.NewTexture2:SetTexture(BarTexture)
 	ConfigWindow.ScrollBar.NewTexture2:SetVertexColor(0.2, 0.2, 0.2)
 	
 	local Height
