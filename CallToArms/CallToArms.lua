@@ -14,15 +14,148 @@ local RoleNames = {TANK, HEALER, DAMAGER}
 local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
 local UpdateInt = 45
 local CombatTime = 0
+local Locale = GetLocale()
 local ID, Name, SubType, Min, Max, Timewalking, _
 
 local BlankTexture = "Interface\\AddOns\\CallToArms\\vUIBlank.tga"
 local BarTexture = "Interface\\AddOns\\CallToArms\\vUI4.tga"
 local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
 
-local StartMessage = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
-local EndedMessage = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
-local InvalidRole = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+if (Locale == "koKR") then
+	Font = "Interface\\Addons\\CallToArms\\NotoSansKR.otf"
+elseif (Locale == "zhCN") then
+	Font = "Interface\\Addons\\CallToArms\\NotoSansSC.ttf"
+elseif (Locale == "zhTW") then
+	Font = "Interface\\Addons\\CallToArms\\NotoSansTC.ttf"
+end
+
+local Index = function(self, key)
+	return key
+end
+
+local L = setmetatable({}, {__index = Index})
+
+if (Locale == "deDE") then -- German
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "esES") then -- Spanish (Spain)
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "esMX") then -- Spanish (Mexico)
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "frFR") then -- French
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "itIT") then -- Italian
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "koKR") then -- Korean
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "ptBR") then -- Portuguese (Brazil)
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "ruRU") then -- Russian
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "zhCN") then -- Chinese (Simplified)
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+elseif (Locale == "zhTW") then -- Chinese (Traditional/Taiwan)
+	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
+	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
+	L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"] = "|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"
+	L["Set update interval (seconds)"] = "Set update interval (seconds)"
+	L["Set window transparency"] = "Set window transparency"
+	L["Announce bonuses beginning"] = "Announce bonuses beginning"
+	L["Announce bonuses ending"] = "Announce bonuses ending"
+	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
+	L["Auto minimize in groups"] = "Auto minimize in groups"
+	L["Play sound"] = "Play sound"
+	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+end
 
 local Options = {}
 
@@ -481,7 +614,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Options.AnnounceStart then
-				print(format(StartMessage, self.DungeonName, RoleNames[1]))
+				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[1]))
 			end
 			
 			self.AnnounceTank = false
@@ -493,7 +626,7 @@ local Update = function(self)
 			
 			if Options.AnnounceEndings then
 				if Options.AnnounceStart then
-					print(format(EndedMessage, self.DungeonName, RoleNames[1]))
+					print(format(L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"], self.DungeonName, RoleNames[1]))
 				end
 			end
 			
@@ -512,7 +645,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Options.AnnounceStart then
-				print(format(StartMessage, self.DungeonName, RoleNames[2]))
+				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[2]))
 			end
 			
 			self.AnnounceHealer = false
@@ -524,7 +657,7 @@ local Update = function(self)
 			
 			if Options.AnnounceEndings then
 				if Options.AnnounceStart then
-					print(format(EndedMessage, self.DungeonName, RoleNames[2]))
+					print(format(L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"], self.DungeonName, RoleNames[2]))
 				end
 			end
 			
@@ -539,7 +672,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Options.AnnounceStart then
-				print(format(StartMessage, self.DungeonName, RoleNames[3]))
+				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[3]))
 			end
 			
 			self.AnnounceDPS = false
@@ -551,7 +684,7 @@ local Update = function(self)
 			
 			if Options.AnnounceEndings then
 				if Options.AnnounceStart then
-					print(format(EndedMessage, self.DungeonName, RoleNames[3]))
+					print(format(L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"], self.DungeonName, RoleNames[3]))
 				end
 			end
 			
@@ -1054,7 +1187,7 @@ end
 
 local CreateCTAConfig = function()
 	if (CallToArms.NumHeaders == 0) then
-		print("Still scanning for headers. Try again in a moment.")
+		print(L["Still scanning for dungeons. Try again in a moment."])
 		
 		return
 	end
