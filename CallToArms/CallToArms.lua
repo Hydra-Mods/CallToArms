@@ -22,11 +22,11 @@ local BarTexture = "Interface\\AddOns\\CallToArms\\vUI4.tga"
 local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
 
 if (Locale == "koKR") then
-	Font = "Interface\\Addons\\CallToArms\\NotoSansKR.otf"
+	Font = "Fonts\\2002.ttf"
 elseif (Locale == "zhCN") then
-	Font = "Interface\\Addons\\CallToArms\\NotoSansSC.ttf"
+	Font = "Fonts\\ARHei.ttf"
 elseif (Locale == "zhTW") then
-	Font = "Interface\\Addons\\CallToArms\\NotoSansTC.ttf"
+	Font = "Fonts\\bLEI00D.ttf"
 end
 
 local Index = function(self, key)
