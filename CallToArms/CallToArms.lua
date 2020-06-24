@@ -157,17 +157,17 @@ elseif (Locale == "zhTW") then -- Chinese (Traditional/Taiwan)
 	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
 end
 
-local Options = {}
-
-Options.AnnounceStart = false -- Announce when a bonus queue begins
-Options.AnnounceEndings = false -- Announce when a bonus queue ends
-Options.UpdateInterval = 45 -- Number of seconds between updates
-Options.WindowAlpha = 1 -- The transparency of the window
-Options.FilterRole = false -- Filter out roles we can't perform
-Options.HideInGroup = true -- Disable scanning in groups & dungeons, and hide the frame
-Options.MinimizeInGroup = false -- Automatically minimize while in groups
-Options.PlaySound = true -- Play a sound when a new queue appears
-Options.Minimized = false
+local Settings = {
+	["AnnounceStart"] = false,
+	["AnnounceEndings"] = false,
+	["UpdateInterval"] = 45,
+	["WindowAlpha"] = 1,
+	["FilterRole"] = false,
+	["HideInGroup"] = true,
+	["MinimizeInGroup"] = false,
+	["PlaySound"] = true,
+	["Minimized"] = false,
+}
 
 local Rename = {
 	[744] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Burning Crusade) --> Timewalking
@@ -286,7 +286,7 @@ local SoundThrottleOnUpdate = function(self, ela)
 end
 
 function CallToArms:PlaySound()
-	if (not Options.PlaySound) or (not self.SoundThrottle.CanPlaySound) then
+	if (not Settings.PlaySound) or (not self.SoundThrottle.CanPlaySound) then
 		return
 	end
 	
@@ -381,14 +381,14 @@ function CallToArms:CreateModules()
 			CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] = true
 		end
 		
-		if (Options["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == true) then
+		if (Settings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == true) then
 			CallToArms.HeadersByIndex[i]:Enable()
 		else
 			CallToArms.HeadersByIndex[i]:Disable()
 		end
 	end
 	
-	CallToArms:UpdateAlpha(Options.WindowAlpha)
+	CallToArms:UpdateAlpha(Settings.WindowAlpha)
 	
 	RequestLFDPlayerLockInfo()
 end
@@ -411,14 +411,14 @@ function CallToArms:LFG_UPDATE_RANDOM_INFO()
 		v:Update()
 	end
 	
-	if (Options.Minimized and self.NumActive > 0) then
+	if (Settings.Minimized and self.NumActive > 0) then
 		self.Text:SetText(BATTLEGROUND_HOLIDAY .. " (" .. self.NumActive .. ")")
 	else
 		self.Text:SetText(BATTLEGROUND_HOLIDAY)
 	end
 	
 	if (not self.MinimizedCheck) then
-		if Options.Minimized then
+		if Settings.Minimized then
 			self:Minimize()
 		end
 		
@@ -436,12 +436,12 @@ function CallToArms:VARIABLES_LOADED()
 	end
 	
 	for Key, Value in pairs(CallToArmsSettings) do
-		Options[Key] = Value
+		Settings[Key] = Value
 	end
 	
 	self.Ready = true
 	
-	if Options.MinimizeInGroup then
+	if Settings.MinimizeInGroup then
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	end
 end
@@ -477,7 +477,7 @@ function CallToArms:SortHeaders()
 		end
 	end
 	
-	if Options.Minimized then
+	if Settings.Minimized then
 		self.Backdrop:SetPoint("BOTTOMRIGHT", self, 4, -4)
 	else
 		if (LastHeader == self) then
@@ -491,7 +491,7 @@ end
 function CallToArms:Minimize()
 	self.VisualParent:SetAlpha(0)
 	
-	Options.Minimized = true
+	Settings.Minimized = true
 	CallToArms.Minimized = true
 	
 	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowDown.tga")
@@ -518,7 +518,7 @@ end
 function CallToArms:Maximize()
 	self.VisualParent:SetAlpha(1)
 	
-	Options.Minimized = false
+	Settings.Minimized = false
 	CallToArms.Minimized = false
 	
 	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowUp.tga")
@@ -605,7 +605,7 @@ local Update = function(self)
 	
 	if self.TankActive then
 		if self.AnnounceTank then
-			if (Options.FilterRole and not RoleMapByClass[Class][1]) then
+			if (Settings.FilterRole and not RoleMapByClass[Class][1]) then
 				return
 			end
 			
@@ -613,7 +613,7 @@ local Update = function(self)
 			self:Sort()
 			CallToArms:PlaySound()
 			
-			if Options.AnnounceStart then
+			if Settings.AnnounceStart then
 				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[1]))
 			end
 			
@@ -624,8 +624,8 @@ local Update = function(self)
 			self[1]:Hide()
 			self:Sort()
 			
-			if Options.AnnounceEndings then
-				if Options.AnnounceStart then
+			if Settings.AnnounceEndings then
+				if Settings.AnnounceStart then
 					print(format(L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"], self.DungeonName, RoleNames[1]))
 				end
 			end
@@ -636,7 +636,7 @@ local Update = function(self)
 	
 	if self.HealerActive then
 		if self.AnnounceHealer then
-			if (Options.FilterRole and not RoleMapByClass[Class][2]) then
+			if (Settings.FilterRole and not RoleMapByClass[Class][2]) then
 				return
 			end
 			
@@ -644,7 +644,7 @@ local Update = function(self)
 			self:Sort()
 			CallToArms:PlaySound()
 			
-			if Options.AnnounceStart then
+			if Settings.AnnounceStart then
 				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[2]))
 			end
 			
@@ -655,8 +655,8 @@ local Update = function(self)
 			self[2]:Hide()
 			self:Sort()
 			
-			if Options.AnnounceEndings then
-				if Options.AnnounceStart then
+			if Settings.AnnounceEndings then
+				if Settings.AnnounceStart then
 					print(format(L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"], self.DungeonName, RoleNames[2]))
 				end
 			end
@@ -671,7 +671,7 @@ local Update = function(self)
 			self:Sort()
 			CallToArms:PlaySound()
 			
-			if Options.AnnounceStart then
+			if Settings.AnnounceStart then
 				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[3]))
 			end
 			
@@ -682,8 +682,8 @@ local Update = function(self)
 			self[3]:Hide()
 			self:Sort()
 			
-			if Options.AnnounceEndings then
-				if Options.AnnounceStart then
+			if Settings.AnnounceEndings then
+				if Settings.AnnounceStart then
 					print(format(L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"], self.DungeonName, RoleNames[3]))
 				end
 			end
@@ -713,7 +713,7 @@ local FilterUpdate = function(self)
 	end
 	
 	if self.TankActive then
-		if (Options.FilterRole and not RoleMapByClass[Class][1]) then
+		if (Settings.FilterRole and not RoleMapByClass[Class][1]) then
 			self[1]:Hide()
 			self:Sort()
 			self.AnnounceTank = true
@@ -721,7 +721,7 @@ local FilterUpdate = function(self)
 	end
 	
 	if self.HealerActive then
-		if (Options.FilterRole and not RoleMapByClass[Class][2]) then
+		if (Settings.FilterRole and not RoleMapByClass[Class][2]) then
 			self[2]:Hide()
 			self:Sort()
 			self.AnnounceHealer = true
@@ -902,7 +902,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 		self:Update()
 		CallToArms:SortHeaders()
 		
-		if Options.Minimized then
+		if Settings.Minimized then
 			CallToArms.NumActive = 0
 			
 			for k, v in pairs(CallToArms.Headers) do
@@ -923,7 +923,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 		self:Reset()
 		CallToArms:SortHeaders()
 		
-		if Options.Minimized then
+		if Settings.Minimized then
 			CallToArms.NumActive = 0
 			
 			if (CallToArms.NumActive > 0) then
@@ -958,7 +958,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 			self:Hide()
 		end
 		
-		if (not Options.Minimized) then
+		if (not Settings.Minimized) then
 			CallToArms:SortHeaders()
 		end
 	end
@@ -1330,7 +1330,7 @@ local CreateCTAConfig = function()
 	UpdateIntOption.EditBox:EnableKeyboard(true)
 	UpdateIntOption.EditBox:EnableMouse(true)
 	UpdateIntOption.EditBox:EnableMouseWheel(true)
-	UpdateIntOption.EditBox:SetText(Options.UpdateInterval)
+	UpdateIntOption.EditBox:SetText(Settings.UpdateInterval)
 	UpdateIntOption.EditBox:SetScript("OnMouseWheel", EditBoxOnMouseWheel)
 	UpdateIntOption.EditBox:SetScript("OnMouseDown", EditBoxOnMouseDown)
 	UpdateIntOption.EditBox:SetScript("OnEscapePressed", EditBoxOnEnterPressed)
@@ -1342,7 +1342,7 @@ local CreateCTAConfig = function()
 	
 	UpdateIntOption.EditBox.Hook = function(value)
 		UpdateInt = value
-		Options.UpdateInterval = value
+		Settings.UpdateInterval = value
 		CallToArmsSettings.UpdateInterval = value
 	end
 	
@@ -1384,7 +1384,7 @@ local CreateCTAConfig = function()
 	WindowAlphaOption.EditBox:EnableKeyboard(true)
 	WindowAlphaOption.EditBox:EnableMouse(true)
 	WindowAlphaOption.EditBox:EnableMouseWheel(true)
-	WindowAlphaOption.EditBox:SetText(Options.WindowAlpha)
+	WindowAlphaOption.EditBox:SetText(Settings.WindowAlpha)
 	WindowAlphaOption.EditBox:SetScript("OnMouseWheel", EditBoxOnMouseWheel)
 	WindowAlphaOption.EditBox:SetScript("OnMouseDown", EditBoxOnMouseDown)
 	WindowAlphaOption.EditBox:SetScript("OnEscapePressed", EditBoxOnEnterPressed)
@@ -1395,7 +1395,7 @@ local CreateCTAConfig = function()
 	WindowAlphaOption.EditBox.Step = 0.1
 	
 	WindowAlphaOption.EditBox.Hook = function(value)
-		Options.WindowAlpha = value
+		Settings.WindowAlpha = value
 		CallToArmsSettings.WindowAlpha = value
 		
 		CallToArms:UpdateAlpha(value)
@@ -1438,31 +1438,31 @@ local CreateCTAConfig = function()
 		ConfigWindow.Boxes[i] = Checkbox
 	end
 	
-	if Options.AnnounceStart then
+	if Settings.AnnounceStart then
 		ConfigWindow.Boxes[1].Tex:SetVertexColor(0, 0.8, 0)
 	else
 		ConfigWindow.Boxes[1].Tex:SetVertexColor(0.8, 0, 0)
 	end
 	
-	if Options.AnnounceEndings then
+	if Settings.AnnounceEndings then
 		ConfigWindow.Boxes[2].Tex:SetVertexColor(0, 0.8, 0)
 	else
 		ConfigWindow.Boxes[2].Tex:SetVertexColor(0.8, 0, 0)
 	end
 	
-	if Options.FilterRole then
+	if Settings.FilterRole then
 		ConfigWindow.Boxes[3].Tex:SetVertexColor(0, 0.8, 0)
 	else
 		ConfigWindow.Boxes[3].Tex:SetVertexColor(0.8, 0, 0)
 	end
 	
-	if Options.MinimizeInGroup then
+	if Settings.MinimizeInGroup then
 		ConfigWindow.Boxes[4].Tex:SetVertexColor(0, 0.8, 0)
 	else
 		ConfigWindow.Boxes[4].Tex:SetVertexColor(0.8, 0, 0)
 	end
 	
-	if Options.PlaySound then
+	if Settings.PlaySound then
 		ConfigWindow.Boxes[5].Tex:SetVertexColor(0, 0.8, 0)
 	else
 		ConfigWindow.Boxes[5].Tex:SetVertexColor(0.8, 0, 0)
@@ -1470,14 +1470,14 @@ local CreateCTAConfig = function()
 	
 	ConfigWindow.Boxes[1].Text:SetText("Announce bonuses beginning")
 	ConfigWindow.Boxes[1]:SetScript("OnMouseUp", function(self)
-		if Options.AnnounceStart then
+		if Settings.AnnounceStart then
 			CallToArmsSettings.AnnounceStart = false
-			Options.AnnounceStart = false
+			Settings.AnnounceStart = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 		else
 			CallToArmsSettings.AnnounceStart = true
-			Options.AnnounceStart = true
+			Settings.AnnounceStart = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
 		end
@@ -1485,14 +1485,14 @@ local CreateCTAConfig = function()
 	
 	ConfigWindow.Boxes[2].Text:SetText("Announce bonuses ending")
 	ConfigWindow.Boxes[2]:SetScript("OnMouseUp", function(self)
-		if Options.AnnounceEndings then
+		if Settings.AnnounceEndings then
 			CallToArmsSettings.AnnounceEndings = false
-			Options.AnnounceEndings = false
+			Settings.AnnounceEndings = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 		else
 			CallToArmsSettings.AnnounceEndings = true
-			Options.AnnounceEndings = true
+			Settings.AnnounceEndings = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
 		end
@@ -1500,16 +1500,16 @@ local CreateCTAConfig = function()
 	
 	ConfigWindow.Boxes[3].Text:SetText("Filter roles you cannot perform")
 	ConfigWindow.Boxes[3]:SetScript("OnMouseUp", function(self)
-		if Options.FilterRole then
+		if Settings.FilterRole then
 			CallToArmsSettings.FilterRole = false
-			Options.FilterRole = false
+			Settings.FilterRole = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 			
 			CallToArms:LFG_UPDATE_RANDOM_INFO()
 		else
 			CallToArmsSettings.FilterRole = true
-			Options.FilterRole = true
+			Settings.FilterRole = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
 			
@@ -1518,23 +1518,23 @@ local CreateCTAConfig = function()
 			end
 		end
 		
-		if (not Options.Minimized) then
+		if (not Settings.Minimized) then
 			CallToArms:SortHeaders()
 		end
 	end)
 	
 	ConfigWindow.Boxes[4].Text:SetText("Auto minimize in groups")
 	ConfigWindow.Boxes[4]:SetScript("OnMouseUp", function(self)
-		if Options.MinimizeInGroup then
+		if Settings.MinimizeInGroup then
 			CallToArmsSettings.MinimizeInGroup = false
-			Options.MinimizeInGroup = false
+			Settings.MinimizeInGroup = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 			
 			CallToArms:RegisterEvent("GROUP_ROSTER_UPDATE")
 		else
 			CallToArmsSettings.MinimizeInGroup = true
-			Options.MinimizeInGroup = true
+			Settings.MinimizeInGroup = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
 			
@@ -1544,14 +1544,14 @@ local CreateCTAConfig = function()
 	
 	ConfigWindow.Boxes[5].Text:SetText("Play sound")
 	ConfigWindow.Boxes[5]:SetScript("OnMouseUp", function(self)
-		if Options.PlaySound then
+		if Settings.PlaySound then
 			CallToArmsSettings.PlaySound = false
-			Options.PlaySound = false
+			Settings.PlaySound = false
 			
 			self.Tex:SetVertexColor(0.8, 0, 0)
 		else
 			CallToArmsSettings.PlaySound = true
-			Options.PlaySound = true
+			Settings.PlaySound = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
 		end
