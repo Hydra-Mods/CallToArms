@@ -172,7 +172,7 @@ local Rename = {
 	[995] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Wrath of the Lich King) --> Timewalking
 	[1453] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Mists of Pandaria) --> Timewalking
 	[1971] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Warlords of Draenor) --> Timewalking
-	[1670] = LFG_TYPE_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Dungeon
+	[1670] = LFG_TYPE_RANDOM_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Random Dungeon
 	[1671] = LFG_TYPE_HEROIC_DUNGEON, -- Random Heroic (Battle for Azeroth) --> Heroic Dungeon
 }
 
