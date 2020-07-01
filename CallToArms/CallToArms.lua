@@ -21,14 +21,6 @@ local BlankTexture = "Interface\\AddOns\\CallToArms\\vUIBlank.tga"
 local BarTexture = "Interface\\AddOns\\CallToArms\\vUI4.tga"
 local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
 
-if (Locale == "koKR") then
-	Font = "Fonts\\2002.ttf"
-elseif (Locale == "zhCN") then
-	Font = "Fonts\\ARHei.ttf"
-elseif (Locale == "zhTW") then
-	Font = "Fonts\\bLEI00D.ttf"
-end
-
 local Index = function(self, key)
 	return key
 end
@@ -107,6 +99,8 @@ elseif (Locale == "koKR") then -- Korean
 	L["Auto minimize in groups"] = "Auto minimize in groups"
 	L["Play sound"] = "Play sound"
 	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+	
+	Font = "Fonts\\2002.ttf"
 elseif (Locale == "ptBR") then -- Portuguese (Brazil)
 	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
 	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
@@ -143,6 +137,8 @@ elseif (Locale == "zhCN") then -- Chinese (Simplified)
 	L["Auto minimize in groups"] = "Auto minimize in groups"
 	L["Play sound"] = "Play sound"
 	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+	
+	Font = "Fonts\\ARHei.ttf"
 elseif (Locale == "zhTW") then -- Chinese (Traditional/Taiwan)
 	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
 	L["|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"] = "|cffeaeaeaCall To Arms: %s %s bonus has ended.|r"
@@ -155,6 +151,8 @@ elseif (Locale == "zhTW") then -- Chinese (Traditional/Taiwan)
 	L["Auto minimize in groups"] = "Auto minimize in groups"
 	L["Play sound"] = "Play sound"
 	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
+	
+	Font = "Fonts\\bLEI00D.ttf"
 end
 
 local Settings = {
