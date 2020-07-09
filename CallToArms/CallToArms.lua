@@ -170,6 +170,7 @@ local Settings = {
 local Rename = {
 	[744] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Burning Crusade) --> Timewalking
 	[995] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Wrath of the Lich King) --> Timewalking
+	[1146] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Cataclysm) --> Timewalking
 	[1453] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Mists of Pandaria) --> Timewalking
 	[1971] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Warlords of Draenor) --> Timewalking
 	[1670] = LFG_TYPE_RANDOM_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Random Dungeon
