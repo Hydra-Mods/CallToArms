@@ -177,7 +177,7 @@ local Rename = {
 	[1671] = LFG_TYPE_HEROIC_DUNGEON, -- Random Heroic (Battle for Azeroth) --> Heroic Dungeon
 }
 
-local RoleMapByClass = {-- CanTank, CanHeal
+local ClassRoleMap = {-- CanTank, CanHeal
 	["DEATHKNIGHT"] = {true, false},
 	["DEMONHUNTER"] = {true, false},
 	["DRUID"] =       {true, true},
@@ -604,7 +604,7 @@ local Update = function(self)
 	
 	if self.TankActive then
 		if self.AnnounceTank then
-			if (Settings.FilterRole and not RoleMapByClass[Class][1]) then
+			if (Settings.FilterRole and not ClassRoleMap[Class][1]) then
 				return
 			end
 			
@@ -635,7 +635,7 @@ local Update = function(self)
 	
 	if self.HealerActive then
 		if self.AnnounceHealer then
-			if (Settings.FilterRole and not RoleMapByClass[Class][2]) then
+			if (Settings.FilterRole and not ClassRoleMap[Class][2]) then
 				return
 			end
 			
@@ -712,7 +712,7 @@ local FilterUpdate = function(self)
 	end
 	
 	if self.TankActive then
-		if (Settings.FilterRole and not RoleMapByClass[Class][1]) then
+		if (Settings.FilterRole and not ClassRoleMap[Class][1]) then
 			self[1]:Hide()
 			self:Sort()
 			self.AnnounceTank = true
@@ -720,7 +720,7 @@ local FilterUpdate = function(self)
 	end
 	
 	if self.HealerActive then
-		if (Settings.FilterRole and not RoleMapByClass[Class][2]) then
+		if (Settings.FilterRole and not ClassRoleMap[Class][2]) then
 			self[2]:Hide()
 			self:Sort()
 			self.AnnounceHealer = true
@@ -735,16 +735,16 @@ local OnShow = function(self)
 end
 
 local OnClick = function(self, button)
-	ClearAllLFGDungeons(LE_LFG_CATEGORY_LFD)
-	ClearAllLFGDungeons(LE_LFG_CATEGORY_LFR)
-	ClearAllLFGDungeons(LE_LFG_CATEGORY_RF)
+	--ClearAllLFGDungeons(LE_LFG_CATEGORY_LFD)
+	--ClearAllLFGDungeons(LE_LFG_CATEGORY_LFR)
+	ClearAllLFGDungeons(self.SubTypeID)
 	
 	local Eligable, ForTank, ForHealer, ForDamage = GetLFGRoleShortageRewards(self.DungeonID, LFG_ROLE_SHORTAGE_RARE)
 	local Leader = GetLFGRoles()
 	
 	-- Check if we can perform this role. A generic error message would come up anyways, but we'll make our own.
 	if (self.RoleID == 1) then
-		if (ForTank and not RoleMapByClass[Class][self.RoleID]) then
+		if (ForTank and not ClassRoleMap[Class][self.RoleID]) then
 			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
 			
 			return
@@ -752,7 +752,7 @@ local OnClick = function(self, button)
 			SetLFGRoles(Leader, true, false, false)
 		end
 	elseif (self.RoleID == 2) then
-		if (ForHealer and not RoleMapByClass[Class][self.RoleID]) then
+		if (ForHealer and not ClassRoleMap[Class][self.RoleID]) then
 			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
 			
 			return
@@ -763,10 +763,14 @@ local OnClick = function(self, button)
 		SetLFGRoles(Leader, false, false, true)
 	end
 	
-	UpdateQueueStatus(self.DungeonID)
+	--LFDQueueFrame_SetType(self.DungeonID)
 	
 	SetLFGDungeon(self.SubTypeID, self.DungeonID)
 	JoinLFG(self.SubTypeID)
+	
+	--LFDQueueFrame_UpdateRoleButtons()
+	
+	UpdateQueueStatus(self.DungeonID)
 end
 
 local OnEnter = function(self)
@@ -1659,7 +1663,6 @@ local CreateCTAConfig = function()
 	ConfigWindow.ScrollBar:SetMinMaxValues(1, (#ConfigWindow.Widgets - (MAX_SHOWN - 1)))
 	ConfigWindow.ScrollBar:SetValue(1)
 	ConfigWindow.ScrollBar:EnableMouse(true)
-	--ConfigWindow.ScrollBar:SetScript("OnMouseWheel", DropdownScrollBarOnMouseWheel)
 	ConfigWindow.ScrollBar:SetScript("OnValueChanged", ScrollBarOnValueChanged)
 	ConfigWindow.ScrollBar.Parent = ConfigWindow
 	
