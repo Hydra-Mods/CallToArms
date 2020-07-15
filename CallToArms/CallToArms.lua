@@ -741,34 +741,24 @@ local OnClick = function(self, button)
 	
 	local Eligable, ForTank, ForHealer, ForDamage = GetLFGRoleShortageRewards(self.DungeonID, LFG_ROLE_SHORTAGE_RARE)
 	local Leader = GetLFGRoles()
+
+	SetLFGDungeon(self.SubTypeID, self.DungeonID)
+	SetLFGRoles(Leader, self.RoleID == 1, self.RoleID == 2, self.RoleID == 3)
 	
-	-- Check if we can perform this role. A generic error message would come up anyways, but we'll make our own.
-	if (self.RoleID == 1) then
-		if (ForTank and not ClassRoleMap[Class][self.RoleID]) then
-			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
-			
-			return
-		else
-			SetLFGRoles(Leader, true, false, false)
-		end
-	elseif (self.RoleID == 2) then
-		if (ForHealer and not ClassRoleMap[Class][self.RoleID]) then
-			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
-			
-			return
-		else
-			SetLFGRoles(Leader, false, true, false)
-		end
-	else
-		SetLFGRoles(Leader, false, false, true)
+	if (self.SubTypeID == LE_LFG_CATEGORY_LFD) then
+		LFDFrame_DisplayDungeonByID(self.DungeonID)
+	elseif (self.SubTypeID == LE_LFG_CATEGORY_RF) then
+		LFG_UpdateQueuedList()
+		LFG_UpdateAllRoleCheckboxes()
 	end
 	
 	--LFDQueueFrame_SetType(self.DungeonID)
 	
-	SetLFGDungeon(self.SubTypeID, self.DungeonID)
+	--SetLFGDungeon(self.SubTypeID, self.DungeonID)
+	--JoinLFG(self.SubTypeID, self.DungeonID)
 	JoinLFG(self.SubTypeID)
 	
-	--LFDQueueFrame_UpdateRoleButtons()
+	LFDQueueFrame_UpdateRoleButtons()
 	
 	UpdateQueueStatus(self.DungeonID)
 end
