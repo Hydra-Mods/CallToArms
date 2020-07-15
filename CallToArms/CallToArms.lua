@@ -735,13 +735,26 @@ local OnShow = function(self)
 end
 
 local OnClick = function(self, button)
-	--ClearAllLFGDungeons(LE_LFG_CATEGORY_LFD)
-	--ClearAllLFGDungeons(LE_LFG_CATEGORY_LFR)
 	ClearAllLFGDungeons(self.SubTypeID)
 	
 	local Eligable, ForTank, ForHealer, ForDamage = GetLFGRoleShortageRewards(self.DungeonID, LFG_ROLE_SHORTAGE_RARE)
 	local Leader = GetLFGRoles()
-
+	
+	-- Check if we can perform this role. A generic error message would come up anyways, but we'll make our own.
+	if (self.RoleID == 1) then
+		if (ForTank and not ClassRoleMap[Class][self.RoleID]) then
+			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
+			
+			return
+		end
+	elseif (self.RoleID == 2) then
+		if (ForHealer and not ClassRoleMap[Class][self.RoleID]) then
+			print(YOUR_CLASS_MAY_NOT_PERFORM_ROLE)
+			
+			return
+		end
+	end
+	
 	SetLFGDungeon(self.SubTypeID, self.DungeonID)
 	SetLFGRoles(Leader, self.RoleID == 1, self.RoleID == 2, self.RoleID == 3)
 	
@@ -751,11 +764,7 @@ local OnClick = function(self, button)
 		LFG_UpdateQueuedList()
 		LFG_UpdateAllRoleCheckboxes()
 	end
-	
-	--LFDQueueFrame_SetType(self.DungeonID)
-	
-	--SetLFGDungeon(self.SubTypeID, self.DungeonID)
-	--JoinLFG(self.SubTypeID, self.DungeonID)
+
 	JoinLFG(self.SubTypeID)
 	
 	LFDQueueFrame_UpdateRoleButtons()
