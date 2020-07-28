@@ -362,7 +362,7 @@ function CallToArms:CreateModules()
 		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
 		
 		if ((Level >= (Min - LFD_MAX_SHOWN_LEVEL_DIFF)) and (Level <= (Max + LFD_MAX_SHOWN_LEVEL_DIFF))) or (Timewalking and Level >= Min) then
-			CallToArms:NewModule(ID, Rename[ID] or Name, SubType)
+			CallToArms:NewModule(ID, Rename[ID] or Name, 1) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD so that queueing works
 		end
 	end
 	
@@ -758,16 +758,15 @@ local OnClick = function(self, button)
 	SetLFGDungeon(self.SubTypeID, self.DungeonID)
 	SetLFGRoles(Leader, self.RoleID == 1, self.RoleID == 2, self.RoleID == 3)
 	
-	if (self.SubTypeID == LE_LFG_CATEGORY_LFD) then
+	if (self.SubTypeID == LE_LFG_CATEGORY_LFD) then -- LFDQueueFrame_Join()
 		LFDFrame_DisplayDungeonByID(self.DungeonID)
+		LFDQueueFrame_UpdateRoleButtons()
 	elseif (self.SubTypeID == LE_LFG_CATEGORY_RF) then
 		LFG_UpdateQueuedList()
 		LFG_UpdateAllRoleCheckboxes()
 	end
-
-	JoinLFG(self.SubTypeID)
 	
-	LFDQueueFrame_UpdateRoleButtons()
+	JoinLFG(self.SubTypeID)
 	
 	UpdateQueueStatus(self.DungeonID)
 end
