@@ -1,5 +1,4 @@
 local format = format
-local print = print
 local pairs = pairs
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
@@ -329,8 +328,8 @@ local UpdateQueueStatus = function(id)
 	end
 end
 
-local UpdateAllQueues = function()
-	for k, v in pairs(CallToArms.Headers) do
+function CallToArms:UpdateAllQueues()
+	for k, v in pairs(self.Headers) do
 		UpdateQueueStatus(v.DungeonID)
 	end
 end
@@ -362,7 +361,7 @@ function CallToArms:CreateModules()
 		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
 		
 		if ((Level >= (Min - LFD_MAX_SHOWN_LEVEL_DIFF)) and (Level <= (Max + LFD_MAX_SHOWN_LEVEL_DIFF))) or (Timewalking and Level >= Min) then
-			CallToArms:NewModule(ID, Rename[ID] or Name, 1) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD so that queueing works
+			CallToArms:NewModule(ID, Rename[ID] or Name, 1) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD (which is 1) so that queueing works
 		end
 	end
 	
@@ -402,7 +401,7 @@ function CallToArms:LFG_UPDATE_RANDOM_INFO()
 		return
 	end
 	
-	UpdateAllQueues()
+	self:UpdateAllQueues()
 	
 	self.NumActive = 0
 	
@@ -456,7 +455,7 @@ function CallToArms:GROUP_ROSTER_UPDATE()
 end
 
 function CallToArms:LFG_UPDATE()
-	UpdateAllQueues()
+	self:UpdateAllQueues()
 end
 
 function CallToArms:SortHeaders()
@@ -758,7 +757,7 @@ local OnClick = function(self, button)
 	SetLFGDungeon(self.SubTypeID, self.DungeonID)
 	SetLFGRoles(Leader, self.RoleID == 1, self.RoleID == 2, self.RoleID == 3)
 	
-	if (self.SubTypeID == LE_LFG_CATEGORY_LFD) then -- LFDQueueFrame_Join()
+	if (self.SubTypeID == LE_LFG_CATEGORY_LFD) then
 		LFDFrame_DisplayDungeonByID(self.DungeonID)
 		LFDQueueFrame_UpdateRoleButtons()
 	elseif (self.SubTypeID == LE_LFG_CATEGORY_RF) then
