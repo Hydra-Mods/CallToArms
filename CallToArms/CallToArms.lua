@@ -11,7 +11,7 @@ local Class = select(2, UnitClass("player"))
 local Level = UnitLevel("player")
 local RoleNames = {TANK, HEALER, DAMAGER}
 local RoleIcons = {"Interface\\Icons\\Ability_warrior_defensivestance", "Interface\\Icons\\spell_chargepositive", "Interface\\Icons\\ability_throw"}
-local UpdateInt = 45
+local UpdateInt = 60
 local CombatTime = 0
 local Locale = GetLocale()
 local ID, Name, SubType, Min, Max, Timewalking, _
