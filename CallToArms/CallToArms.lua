@@ -1703,7 +1703,7 @@ local SlashCommand = function(cmd)
 		else
 			CallToArms:Show()
 		end
-	elseif (cmd == "config") then
+	else
 		if (not CallToArmsConfig) then
 			CreateCTAConfig()
 			
@@ -1714,12 +1714,6 @@ local SlashCommand = function(cmd)
 			CallToArmsConfig:Hide()
 		else
 			CallToArmsConfig:Show()
-		end
-	else
-		if CallToArms:IsShown() then
-			CallToArms:Hide()
-		else
-			CallToArms:Show()
 		end
 	end
 end
