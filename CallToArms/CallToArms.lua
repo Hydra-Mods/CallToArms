@@ -5,7 +5,7 @@ local InCombatLockdown = InCombatLockdown
 local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
 local GetLFGRoleShortageRewards = GetLFGRoleShortageRewards
 local LFG_ROLE_NUM_SHORTAGE_TYPES = LFG_ROLE_NUM_SHORTAGE_TYPES
-local LFD_MAX_SHOWN_LEVEL_DIFF = LFD_MAX_SHOWN_LEVEL_DIFF -- 15, LFD uses this to filter level range for dungeons
+local LevelDifference = 10 -- LFD used LFD_MAX_SHOWN_LEVEL_DIFF to filter level range for dungeons, it was 15. I'll adjust it for Shadowlands.
 
 local Class = select(2, UnitClass("player"))
 local Level = UnitLevel("player")
@@ -259,7 +259,7 @@ CallToArms.ToggleButton.Texture:SetPoint("CENTER", CallToArms.ToggleButton, 0, -
 CallToArms.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowUp.tga")
 CallToArms.ToggleButton.Texture:SetVertexColor(0.92, 0.92, 0.92)
 
-CallToArms.Backdrop = CreateFrame("Frame", nil, CallToArms)
+CallToArms.Backdrop = CreateFrame("Frame", nil, CallToArms, "BackdropTemplate")
 CallToArms.Backdrop:SetPoint("TOPLEFT", CallToArms, -4, 4)
 CallToArms.Backdrop:SetPoint("BOTTOMRIGHT", CallToArms, 4, -4)
 CallToArms.Backdrop:SetBackdrop(Outline)
@@ -360,7 +360,7 @@ function CallToArms:CreateModules()
 	for i = 1, GetNumRandomDungeons() do
 		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
 		
-		if ((Level >= (Min - LFD_MAX_SHOWN_LEVEL_DIFF)) and (Level <= (Max + LFD_MAX_SHOWN_LEVEL_DIFF))) or (Timewalking and Level >= Min) then
+		if ((Level >= (Min - LevelDifference)) and (Level <= (Max + LevelDifference))) or (Timewalking and Level >= Min) then
 			CallToArms:NewModule(ID, Rename[ID] or Name, 1) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD (which is 1) so that queueing works
 		end
 	end
@@ -836,7 +836,7 @@ local OnLeave = function(self)
 end
 
 function CallToArms:NewModule(id, name, subtypeid)
-	local Header = CreateFrame("Frame", nil, self.VisualParent)
+	local Header = CreateFrame("Frame", nil, self.VisualParent, "BackdropTemplate")
 	Header:SetSize(132, 20)
 	Header:SetPoint("LEFT", UIParent, 8, 0)
 	Header.Ela = 0
@@ -964,7 +964,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 	end
 	
 	for i = 1, 3 do
-		local Bar = CreateFrame("Button", nil, self.VisualParent)
+		local Bar = CreateFrame("Button", nil, self.VisualParent, "BackdropTemplate")
 		Bar:SetSize(132, 20)
 		Bar:Hide()
 		Bar.Ela = 0
@@ -1260,7 +1260,7 @@ local CreateCTAConfig = function()
 	ConfigWindow.ButtonParent:SetFrameStrata("HIGH")
 	ConfigWindow.ButtonParent:EnableMouse(true)
 	
-	ConfigWindow.Backdrop = CreateFrame("Frame", nil, ConfigWindow)
+	ConfigWindow.Backdrop = CreateFrame("Frame", nil, ConfigWindow, "BackdropTemplate")
 	ConfigWindow.Backdrop:SetPoint("TOPLEFT", Config, -4, 4)
 	ConfigWindow.Backdrop:SetPoint("BOTTOMRIGHT", ConfigWindow, 4, -4)
 	ConfigWindow.Backdrop:SetBackdrop(Outline)
@@ -1647,7 +1647,7 @@ local CreateCTAConfig = function()
 	end
 	
 	-- Scroll bar
-	ConfigWindow.ScrollBar = CreateFrame("Slider", nil, ConfigWindow.ButtonParent)
+	ConfigWindow.ScrollBar = CreateFrame("Slider", nil, ConfigWindow.ButtonParent, "BackdropTemplate")
 	ConfigWindow.ScrollBar:SetPoint("TOPRIGHT", ConfigWindow, -3, -3)
 	ConfigWindow.ScrollBar:SetPoint("BOTTOMRIGHT", ConfigWindow, -3, 3)
 	ConfigWindow.ScrollBar:SetWidth(14)
