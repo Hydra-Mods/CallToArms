@@ -815,12 +815,12 @@ local OnEnter = function(self)
 					end
 				elseif (RewardType == "currency") then
 					local CurrencyNum = select(3, CurrencyContainerUtil.GetCurrencyContainerInfo(ID, NumRewards, Name, Icon, Quality))
-					local Link = GetCurrencyLink(ID, CurrencyNum)
-					local CurrencyName = GetCurrencyInfo(ID)
-					local Hex = ITEM_QUALITY_COLORS[Quality].hex or "ffffff"
+					local Link = C_CurrencyInfo.GetCurrencyLink(ID, CurrencyNum)
+					local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(ID)
+					local Hex = ITEM_QUALITY_COLORS[CurrencyInfo.quality].hex or "ffffff"
 					
-					if CurrencyName then
-						GameTooltip:AddLine(format("%s %s%s|r", NumRewards, Hex, CurrencyName), 1, 1, 1)
+					if CurrencyInfo then
+						GameTooltip:AddLine(format("%s %s%s|r", NumRewards, Hex, CurrencyInfo.name), 1, 1, 1)
 					end
 				end
 			end
