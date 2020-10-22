@@ -389,6 +389,10 @@ function CallToArms:CreateModules()
 	CallToArms:UpdateAlpha(Settings.WindowAlpha)
 	
 	RequestLFDPlayerLockInfo()
+	
+	if CallToArms.Request then
+		CallToArms:CreateConfig()
+	end
 end
 
 function CallToArms:PLAYER_ENTERING_WORLD()
@@ -1185,12 +1189,15 @@ local ScrollBarOnValueChanged = function(self, value)
 	Scroll(self.Parent)
 end
 
-local CreateCTAConfig = function()
-	if (CallToArms.NumHeaders == 0) then
-		print(L["Still scanning for dungeons. Try again in a moment."])
+function CallToArms:CreateConfig()
+	if (self.NumHeaders == 0) then
+		print(L["Still scanning for dungeons. Settings will load in a moment."])
+		self.Request = true
 		
 		return
 	end
+	
+	self.Request = false
 	
 	local Config = CreateFrame("Frame", "CallToArmsConfig", UIParent)
 	Config:SetSize(210, 18)
@@ -1585,8 +1592,8 @@ local CreateCTAConfig = function()
 	
 	local ModuleEnables = {}
 	
-	for i = 1, CallToArms.NumHeaders do
-		local DungeonName = CallToArms.HeadersByIndex[i].DungeonName
+	for i = 1, self.NumHeaders do
+		local DungeonName = self.HeadersByIndex[i].DungeonName
 		
 		local Checkbox = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
 		Checkbox:SetSize(20, 20)
@@ -1685,12 +1692,12 @@ local CreateCTAConfig = function()
 	
 	local Height
 	
-	if (CallToArms.NumHeaders > 6) then
+	if (self.NumHeaders > 6) then
 		Height = (MAX_SHOWN * 22) + 4
 		
 		Scroll(ConfigWindow)
 	else
-		Height = ((6 + CallToArms.NumHeaders) * 22) + 4
+		Height = ((6 + self.NumHeaders) * 22) + 4
 	end
 	
 	ConfigWindow:SetHeight(Height)
@@ -1705,7 +1712,7 @@ local SlashCommand = function(cmd)
 		end
 	else
 		if (not CallToArmsConfig) then
-			CreateCTAConfig()
+			CallToArms:CreateConfig()
 			
 			return
 		end
