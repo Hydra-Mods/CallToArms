@@ -1141,7 +1141,7 @@ local EditBoxOnMouseWheel = function(self, delta)
 	self.Hook(Value)
 end
 
-local MAX_SHOWN = 12
+local MAX_SHOWN = 10
 
 local Scroll = function(self)
 	local First = false
@@ -1701,6 +1701,8 @@ function CallToArms:CreateConfig()
 	end
 	
 	ConfigWindow:SetHeight(Height)
+	
+	Scroll(ConfigWindow)
 end
 
 local SlashCommand = function(cmd)
