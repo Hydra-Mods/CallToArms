@@ -5,7 +5,6 @@ local InCombatLockdown = InCombatLockdown
 local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
 local GetLFGRoleShortageRewards = GetLFGRoleShortageRewards
 local LFG_ROLE_NUM_SHORTAGE_TYPES = LFG_ROLE_NUM_SHORTAGE_TYPES
-local LevelDifference = 10 -- LFD used LFD_MAX_SHOWN_LEVEL_DIFF to filter level range for dungeons, it was 15. I'll adjust it for Shadowlands.
 
 local Class = select(2, UnitClass("player"))
 local Level = UnitLevel("player")
@@ -355,12 +354,15 @@ function CallToArms:PLAYER_REGEN_DISABLED()
 	CombatTime = GetTime()
 end
 
+local ForAll, ForPlayer
+
 function CallToArms:CreateModules()
 	-- Find dungeons
 	for i = 1, GetNumRandomDungeons() do
-		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
+		ID, Name, SubType, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Timewalking = GetLFGRandomDungeonInfo(i)
+		ForAll, ForPlayer = IsLFGDungeonJoinable(ID)
 		
-		if ((Level >= (Min - LevelDifference)) and (Level <= (Max + LevelDifference))) or (Timewalking and Level >= Min) then
+		if ForPlayer then
 			CallToArms:NewModule(ID, Rename[ID] or Name, 1) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD (which is 1) so that queueing works
 		end
 	end
@@ -1141,7 +1143,7 @@ local EditBoxOnMouseWheel = function(self, delta)
 	self.Hook(Value)
 end
 
-local MAX_SHOWN = 10
+local MAX_SHOWN = 7
 
 local Scroll = function(self)
 	local First = false
