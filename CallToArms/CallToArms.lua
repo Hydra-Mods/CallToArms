@@ -618,7 +618,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Settings.AnnounceStart then
-				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[1]))
+				print(format(L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"], self.DungeonName, RoleNames[1]))
 			end
 			
 			self.AnnounceTank = false
@@ -649,7 +649,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Settings.AnnounceStart then
-				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[2]))
+				print(format(L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"], self.DungeonName, RoleNames[2]))
 			end
 			
 			self.AnnounceHealer = false
@@ -676,7 +676,7 @@ local Update = function(self)
 			CallToArms:PlaySound()
 			
 			if Settings.AnnounceStart then
-				print(format(L["|cffeaeaeaCall To Arms: Your class cannot perform the role of %s.|r"], self.DungeonName, RoleNames[3]))
+				print(format(L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"], self.DungeonName, RoleNames[3]))
 			end
 			
 			self.AnnounceDPS = false
