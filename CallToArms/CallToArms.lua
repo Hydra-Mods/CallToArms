@@ -72,6 +72,7 @@ elseif (Locale == "frFR") then -- French
 	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
 	L["Auto minimize in groups"] = "Auto minimize in groups"
 	L["Play sound"] = "Play sound"
+	L["Play sound"] = "Play sound"
 	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
 elseif (Locale == "itIT") then -- Italian
 	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
@@ -363,7 +364,7 @@ function CallToArms:CreateModules()
 		ForAll, ForPlayer = IsLFGDungeonJoinable(ID)
 		
 		if ForPlayer then
-			CallToArms:NewModule(ID, Rename[ID] or Name, 1) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD (which is 1) so that queueing works
+			CallToArms:NewModule(ID, Rename[ID] or Name, LFG_SUBTYPEID_DUNGEON) -- SubType returns 6 (LE_LFG_CATEGORY_WORLDPVP) for some reason. Change to proper dungeon category LE_LFG_CATEGORY_LFD (which is 1) so that queueing works
 		end
 	end
 	
@@ -1143,7 +1144,7 @@ local EditBoxOnMouseWheel = function(self, delta)
 	self.Hook(Value)
 end
 
-local MAX_SHOWN = 7
+local MAX_SHOWN = 12
 
 local Scroll = function(self)
 	local First = false
