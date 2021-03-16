@@ -72,7 +72,6 @@ elseif (Locale == "frFR") then -- French
 	L["Filter roles you cannot perform"] = "Filter roles you cannot perform"
 	L["Auto minimize in groups"] = "Auto minimize in groups"
 	L["Play sound"] = "Play sound"
-	L["Play sound"] = "Play sound"
 	L["Still scanning for dungeons. Try again in a moment."] = "Still scanning for dungeons. Try again in a moment."
 elseif (Locale == "itIT") then -- Italian
 	L["|cffeaeaeaCall To Arms: %s %s bonus is active!|r"] = "|cffeaeaeaCall To Arms: %s %s bonus is active!|r"
