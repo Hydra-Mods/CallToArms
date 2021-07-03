@@ -211,7 +211,7 @@ CallToArms.Ela = 0
 CallToArms.NumActive = 0
 CallToArms.NumHeaders = 0
 CallToArms.Headers = {}
-CallToArms.HeadersByIndex = {}
+CallToArms.HeaderIDs = {}
 
 CallToArms.BG = CallToArms:CreateTexture(nil, "BORDER")
 CallToArms.BG:SetPoint("TOPLEFT", CallToArms, -1, 1)
@@ -377,14 +377,14 @@ function CallToArms:CreateModules()
 	end
 	
 	for i = 1, CallToArms.NumHeaders do
-		if (CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == nil) then -- This should fix new modules not loading unless toggled. If we don't have a setting for this dungeon, then enable it by default.
-			CallToArmsSettings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] = true
+		if (CallToArmsSettings["Enable"..CallToArms.HeaderIDs[i].DungeonName] == nil) then -- This should fix new modules not loading unless toggled. If we don't have a setting for this dungeon, then enable it by default.
+			CallToArmsSettings["Enable"..CallToArms.HeaderIDs[i].DungeonName] = true
 		end
 		
-		if (Settings["Enable"..CallToArms.HeadersByIndex[i].DungeonName] == true) then
-			CallToArms.HeadersByIndex[i]:Enable()
+		if (Settings["Enable"..CallToArms.HeaderIDs[i].DungeonName] == true) then
+			CallToArms.HeaderIDs[i]:Enable()
 		else
-			CallToArms.HeadersByIndex[i]:Disable()
+			CallToArms.HeaderIDs[i]:Disable()
 		end
 	end
 	
@@ -1095,7 +1095,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 	self.NumHeaders = self.NumHeaders + 1
 	
 	self.Headers[name] = Header
-	self.HeadersByIndex[self.NumHeaders] = Header
+	self.HeaderIDs[self.NumHeaders] = Header
 end
 
 local EditBoxOnEnterPressed = function(self)
@@ -1595,7 +1595,7 @@ function CallToArms:CreateConfig()
 	local ModuleEnables = {}
 	
 	for i = 1, self.NumHeaders do
-		local DungeonName = self.HeadersByIndex[i].DungeonName
+		local DungeonName = self.HeaderIDs[i].DungeonName
 		
 		local Checkbox = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
 		Checkbox:SetSize(20, 20)
@@ -1632,13 +1632,13 @@ function CallToArms:CreateConfig()
 			if (CallToArmsSettings["Enable"..self.DungeonName] == true) then
 				CallToArmsSettings["Enable"..self.DungeonName] = false
 				
-				CallToArms.HeadersByIndex[self.Index]:Disable()
+				CallToArms.HeaderIDs[self.Index]:Disable()
 				
 				self.Tex:SetVertexColor(0.8, 0, 0)
 			else
 				CallToArmsSettings["Enable"..self.DungeonName] = true
 				
-				CallToArms.HeadersByIndex[self.Index]:Enable()
+				CallToArms.HeaderIDs[self.Index]:Enable()
 				
 				self.Tex:SetVertexColor(0, 0.8, 0)
 			end
