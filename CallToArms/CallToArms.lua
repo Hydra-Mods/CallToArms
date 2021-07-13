@@ -1655,6 +1655,12 @@ function CallToArms:CreateConfig()
 		ModuleEnables[i] = Checkbox
 	end
 	
+	local Max = #ConfigWindow.Widgets - (MAX_SHOWN - 1)
+	
+	if Max < 1 then
+		Max = 8
+	end
+	
 	-- Scroll bar
 	ConfigWindow.ScrollBar = CreateFrame("Slider", nil, ConfigWindow.ButtonParent, "BackdropTemplate")
 	ConfigWindow.ScrollBar:SetPoint("TOPRIGHT", ConfigWindow, -3, -3)
@@ -1666,7 +1672,7 @@ function CallToArms:CreateConfig()
 	ConfigWindow.ScrollBar:SetBackdrop(Outline)
 	ConfigWindow.ScrollBar:SetBackdropColor(0.25, 0.25, 0.25)
 	ConfigWindow.ScrollBar:SetBackdropBorderColor(0, 0, 0)
-	ConfigWindow.ScrollBar:SetMinMaxValues(1, (#ConfigWindow.Widgets - (MAX_SHOWN - 1)))
+	ConfigWindow.ScrollBar:SetMinMaxValues(1, Max)
 	ConfigWindow.ScrollBar:SetValue(1)
 	ConfigWindow.ScrollBar:EnableMouse(true)
 	ConfigWindow.ScrollBar:SetScript("OnValueChanged", ScrollBarOnValueChanged)
@@ -1699,7 +1705,7 @@ function CallToArms:CreateConfig()
 		
 		Scroll(ConfigWindow)
 	else
-		Height = ((6 + self.NumHeaders) * 22) + 4
+		Height = ((9 + self.NumHeaders) * 22) + 4
 	end
 	
 	ConfigWindow:SetHeight(Height)
