@@ -1,6 +1,6 @@
 ## Interface: 90201
 ## Author: Hydra
-## Version: 1.47
+## Version: 1.48
 ## Title: Call to Arms
 ## Notes: Display active Call to Arms bonuses
 ## SavedVariables: CallToArmsSettings
