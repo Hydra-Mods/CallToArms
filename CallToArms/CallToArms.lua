@@ -1,5 +1,5 @@
 local format = format
-local pairs = pairs
+local next = next
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
@@ -15,8 +15,8 @@ local CombatTime = 0
 local Locale = GetLocale()
 local ID, Name, SubType, Min, Max, Timewalking, _
 
-local BlankTexture = "Interface\\AddOns\\CallToArms\\vUIBlank.tga"
-local BarTexture = "Interface\\AddOns\\CallToArms\\vUI4.tga"
+local BlankTexture = "Interface\\AddOns\\CallToArms\\HydraUIBlank.tga"
+local BarTexture = "Interface\\AddOns\\CallToArms\\HydraUI4.tga"
 local Font = "Interface\\Addons\\CallToArms\\PTSans.ttf"
 
 local Index = function(self, key)
@@ -154,15 +154,16 @@ elseif (Locale == "zhTW") then -- Chinese (Traditional/Taiwan)
 end
 
 local Settings = {
-	["AnnounceStart"] = false,
-	["AnnounceEndings"] = false,
-	["UpdateInterval"] = 45,
-	["WindowAlpha"] = 1,
-	["FilterRole"] = false,
-	["HideInGroup"] = true,
-	["MinimizeInGroup"] = false,
-	["PlaySound"] = true,
-	["Minimized"] = false,
+	AnnounceStart = false,
+	AnnounceEndings = false,
+	UpdateInterval = 45,
+	WindowAlpha = 1,
+	FilterRole = false,
+	HideInGroup = true,
+	MinimizeInGroup = false,
+	PlaySound = true,
+	Minimized = false,
+	GrowDown = true,
 }
 
 local Rename = {
@@ -176,18 +177,18 @@ local Rename = {
 }
 
 local ClassRoleMap = {-- CanTank, CanHeal
-	["DEATHKNIGHT"] = {true, false},
-	["DEMONHUNTER"] = {true, false},
-	["DRUID"] =       {true, true},
-	["HUNTER"] =      {false, false},
-	["MAGE"] =        {false, false},
-	["MONK"] =        {true, true},
-	["PALADIN"] =     {true, true},
-	["PRIEST"] =      {false, true},
-	["ROGUE"] =       {false, false},
-	["SHAMAN"] =      {false, true},
-	["WARLOCK"] =     {false, false},
-	["WARRIOR"] =     {true, false},
+	DEATHKNIGHT = {true, false},
+	DEMONHUNTER = {true, false},
+	DRUID =       {true, true},
+	HUNTER =      {false, false},
+	MAGE =        {false, false},
+	MONK =        {true, true},
+	PALADIN =     {true, true},
+	PRIEST =      {false, true},
+	ROGUE =       {false, false},
+	SHAMAN =      {false, true},
+	WARLOCK =     {false, false},
+	WARRIOR =     {true, false},
 }
 
 local Outline = {
@@ -243,7 +244,7 @@ CallToArms.CloseButton:SetScript("OnMouseUp", function() CallToArms:Hide() end)
 
 CallToArms.CloseButton.Texture = CallToArms.CloseButton:CreateTexture(nil, "OVERLAY")
 CallToArms.CloseButton.Texture:SetPoint("CENTER", CallToArms.CloseButton, 0, 0)
-CallToArms.CloseButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIClose.tga")
+CallToArms.CloseButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\HydraUIClose.tga")
 CallToArms.CloseButton.Texture:SetVertexColor(0.92, 0.92, 0.92)
 
 CallToArms.ToggleButton = CreateFrame("Frame", nil, CallToArms)
@@ -255,16 +256,8 @@ CallToArms.ToggleButton:SetScript("OnMouseUp", function() CallToArms:Toggle() en
 
 CallToArms.ToggleButton.Texture = CallToArms.ToggleButton:CreateTexture(nil, "OVERLAY")
 CallToArms.ToggleButton.Texture:SetPoint("CENTER", CallToArms.ToggleButton, 0, -0.5)
-CallToArms.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowUp.tga")
+CallToArms.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\HydraUIArrowUp.tga")
 CallToArms.ToggleButton.Texture:SetVertexColor(0.92, 0.92, 0.92)
-
-CallToArms.Backdrop = CreateFrame("Frame", nil, CallToArms, "BackdropTemplate")
-CallToArms.Backdrop:SetPoint("TOPLEFT", CallToArms, -4, 4)
-CallToArms.Backdrop:SetPoint("BOTTOMRIGHT", CallToArms, 4, -4)
-CallToArms.Backdrop:SetBackdrop(Outline)
-CallToArms.Backdrop:SetBackdropColor(0.25, 0.25, 0.25)
-CallToArms.Backdrop:SetBackdropBorderColor(0, 0, 0)
-CallToArms.Backdrop:SetFrameStrata("LOW")
 
 CallToArms.VisualParent = CreateFrame("Frame", nil, CallToArms)
 
@@ -295,7 +288,7 @@ end
 
 local IsQueued = function(id)
 	for i = 1, #LFGQueuedForList do
-		for k, v in pairs(LFGQueuedForList[i]) do
+		for k, v in next, LFGQueuedForList[i] do
 			if ((k == id) and v) then
 				return true
 			end
@@ -308,7 +301,7 @@ end
 local UpdateQueueStatus = function(id)
 	local Header
 	
-	for k, v in pairs(CallToArms.Headers) do
+	for k, v in next, CallToArms.Headers do
 		if (v.DungeonID == id) then
 			Header = v
 			
@@ -328,7 +321,7 @@ local UpdateQueueStatus = function(id)
 end
 
 function CallToArms:UpdateAllQueues()
-	for k, v in pairs(self.Headers) do
+	for k, v in next, self.Headers do
 		UpdateQueueStatus(v.DungeonID)
 	end
 end
@@ -411,7 +404,7 @@ function CallToArms:LFG_UPDATE_RANDOM_INFO()
 	
 	self.NumActive = 0
 	
-	for k, v in pairs(self.Headers) do
+	for k, v in next, self.Headers do
 		v:Update()
 	end
 	
@@ -439,7 +432,7 @@ function CallToArms:VARIABLES_LOADED()
 		CallToArmsSettings = {}
 	end
 	
-	for Key, Value in pairs(CallToArmsSettings) do
+	for Key, Value in next, CallToArmsSettings do
 		Settings[Key] = Value
 	end
 	
@@ -465,29 +458,27 @@ function CallToArms:LFG_UPDATE()
 end
 
 function CallToArms:SortHeaders()
-	local LastHeader = self
+	local LastHeader
 	
-	for k, v in pairs(self.Headers) do
+	for k, v in next, self.Headers do
 		if (not v.IsDisabled and v:IsVisible()) then
 			v:ClearAllPoints()
 			
-			if (LastHeader == self) then
-				v:SetPoint("TOPLEFT", LastHeader, "BOTTOMLEFT", -1, -3)
+			if Settings.GrowDown then
+				if (not LastHeader) then
+					v:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -1, -2)
+				else
+					v:SetPoint("TOPLEFT", LastHeader.LastShown, "BOTTOMLEFT", 0, -1)
+				end
 			else
-				v:SetPoint("TOPLEFT", LastHeader.LastShown, "BOTTOMLEFT", 0, -2)
+				if (not LastHeader) then
+					v:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -1, (v.NumShown * 20) + v.NumShown)
+				else
+					v:SetPoint("BOTTOMLEFT", LastHeader, "TOPLEFT", 0, (v.NumShown * 20) + (v.NumShown - 1))
+				end
 			end
 			
 			LastHeader = v
-		end
-	end
-	
-	if Settings.Minimized then
-		self.Backdrop:SetPoint("BOTTOMRIGHT", self, 4, -4)
-	else
-		if (LastHeader == self) then
-			CallToArms.Backdrop:SetPoint("BOTTOMRIGHT", self, 4, -4)
-		else
-			CallToArms.Backdrop:SetPoint("BOTTOMRIGHT", LastHeader.LastShown, 3, -3)
 		end
 	end
 end
@@ -498,11 +489,11 @@ function CallToArms:Minimize()
 	Settings.Minimized = true
 	CallToArms.Minimized = true
 	
-	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowDown.tga")
+	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\HydraUIArrowDown.tga")
 	
 	self.NumActive = 0
 	
-	for k, v in pairs(self.Headers) do
+	for k, v in next, self.Headers do
 		for i = 1, 3 do
 			v[i]:EnableMouse(false)
 		end
@@ -525,11 +516,11 @@ function CallToArms:Maximize()
 	Settings.Minimized = false
 	CallToArms.Minimized = false
 	
-	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\vUIArrowUp.tga")
+	self.ToggleButton.Texture:SetTexture("Interface\\AddOns\\CallToArms\\HydraUIArrowUp.tga")
 	
 	self.NumActive = 0
 	
-	for k, v in pairs(self.Headers) do
+	for k, v in next, self.Headers do
 		for i = 1, 3 do
 			v[i]:EnableMouse(true)
 		end
@@ -551,15 +542,13 @@ function CallToArms:Toggle()
 end
 
 function CallToArms:UpdateAlpha(value)
-	for k, v in pairs(self.Headers) do
+	for k, v in next, self.Headers do
 		v.Texture:SetAlpha(value)
 		
 		for i = 1, 3 do
 			v[i].Texture:SetAlpha(value)
 		end
 	end
-	
-	self.Backdrop:SetBackdropColor(0.25, 0.25, 0.25, value)
 end
 
 local OnEvent = function(self, event, ...)
@@ -911,7 +900,7 @@ function CallToArms:NewModule(id, name, subtypeid)
 		if Settings.Minimized then
 			CallToArms.NumActive = 0
 			
-			for k, v in pairs(CallToArms.Headers) do
+			for k, v in next, CallToArms.Headers do
 				v:Update()
 			end
 			
@@ -1079,11 +1068,26 @@ function CallToArms:NewModule(id, name, subtypeid)
 		Bar:SetScript("OnEnter", OnEnter)
 		Bar:SetScript("OnLeave", OnLeave)
 		
-		if (i == 1) then
+		if Settings.GrowDown then
+			if (i == 1) then
+				Bar:SetPoint("TOPLEFT", Header, "BOTTOMLEFT", 0, -1)
+			else
+				Bar:SetPoint("TOP", Header[i-1], "BOTTOM", 0, -1)
+			end
+		else
+			if (i == 1) then
+				Bar:SetPoint("BOTTOMLEFT", Header, "TOPLEFT", 0, 1)
+			else
+				Bar:SetPoint("BOTTOM", Header[i-1], "TOP", 0, 1)
+			end
+		end
+		
+		-- Sorting fixme
+		--[[if (i == 1) then
 			Bar:SetPoint("TOPLEFT", Header, "BOTTOMLEFT", 0, -1)
 		else
 			Bar:SetPoint("TOP", Header[i-1], "BOTTOM", 0, -1)
-		end
+		end]]
 		
 		Header[i] = Bar
 	end
@@ -1240,7 +1244,7 @@ function CallToArms:CreateConfig()
 	
 	Config.CloseButton.Label = Config.CloseButton:CreateTexture(nil, "OVERLAY")
 	Config.CloseButton.Label:SetPoint("CENTER", Config.CloseButton, 0, -0.5)
-	Config.CloseButton.Label:SetTexture("Interface\\AddOns\\CallToArms\\vUIClose.tga")
+	Config.CloseButton.Label:SetTexture("Interface\\AddOns\\CallToArms\\HydraUIClose.tga")
 	
 	local ConfigWindow = CreateFrame("Frame", "CallToArmsConfigWindow", Config)
 	ConfigWindow:SetSize(210, 240)
@@ -1414,7 +1418,7 @@ function CallToArms:CreateConfig()
 	
 	ConfigWindow.Boxes = {}
 	
-	for i = 1, 5 do
+	for i = 1, 6 do
 		local Checkbox = CreateFrame("Frame", nil, ConfigWindow.ButtonParent)
 		Checkbox:SetSize(20, 20)
 		
@@ -1477,6 +1481,12 @@ function CallToArms:CreateConfig()
 		ConfigWindow.Boxes[5].Tex:SetVertexColor(0.8, 0, 0)
 	end
 	
+	if Settings.GrowDown then
+		ConfigWindow.Boxes[6].Tex:SetVertexColor(0, 0.8, 0)
+	else
+		ConfigWindow.Boxes[6].Tex:SetVertexColor(0.8, 0, 0)
+	end
+	
 	ConfigWindow.Boxes[1].Text:SetText("Announce bonuses beginning")
 	ConfigWindow.Boxes[1]:SetScript("OnMouseUp", function(self)
 		if Settings.AnnounceStart then
@@ -1522,7 +1532,7 @@ function CallToArms:CreateConfig()
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
 			
-			for k, v in pairs(CallToArms.Headers) do
+			for k, v in next, CallToArms.Headers do
 				v:FilterUpdate()
 			end
 		end
@@ -1563,6 +1573,25 @@ function CallToArms:CreateConfig()
 			Settings.PlaySound = true
 			
 			self.Tex:SetVertexColor(0, 0.8, 0)
+		end
+	end)
+	
+	ConfigWindow.Boxes[6].Text:SetText("Grow down")
+	ConfigWindow.Boxes[6]:SetScript("OnMouseUp", function(self)
+		if Settings.GrowDown then
+			CallToArmsSettings.GrowDown = false
+			Settings.GrowDown = false
+			
+			self.Tex:SetVertexColor(0.8, 0, 0)
+		else
+			CallToArmsSettings.GrowDown = true
+			Settings.GrowDown = true
+			
+			self.Tex:SetVertexColor(0, 0.8, 0)
+		end
+		
+		if (not Settings.Minimized) then
+			CallToArms:SortHeaders()
 		end
 	end)
 	
