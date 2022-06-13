@@ -363,9 +363,10 @@ function CallToArms:CreateModules()
 	-- Find raids
 	for i = 1, GetNumRFDungeons() do
 		ID, Name, SubType, _, _, _, Min, Max = GetRFDungeonInfo(i)
-		
 		if (Level >= Min) and (Level <= Max) then
-			CallToArms:NewModule(ID, Name, SubType)
+			if ID ~= 2348 then -- Fix me
+				CallToArms:NewModule(ID, Name, SubType)
+			end
 		end
 	end
 	
@@ -461,7 +462,7 @@ function CallToArms:SortHeaders()
 	local LastHeader
 	
 	for k, v in next, self.Headers do
-		if (not v.IsDisabled and v:IsVisible()) then
+		if (not v.Disabled and v:IsVisible()) then
 			v:ClearAllPoints()
 			
 			if Settings.GrowDown then
@@ -1082,13 +1083,6 @@ function CallToArms:NewModule(id, name, subtypeid)
 			end
 		end
 		
-		-- Sorting fixme
-		--[[if (i == 1) then
-			Bar:SetPoint("TOPLEFT", Header, "BOTTOMLEFT", 0, -1)
-		else
-			Bar:SetPoint("TOP", Header[i-1], "BOTTOM", 0, -1)
-		end]]
-		
 		Header[i] = Bar
 	end
 	
@@ -1097,9 +1091,9 @@ function CallToArms:NewModule(id, name, subtypeid)
 	end
 	
 	self.NumHeaders = self.NumHeaders + 1
-	
 	self.Headers[name] = Header
-	self.HeaderIDs[self.NumHeaders] = Header
+	--self.HeaderIDs[self.NumHeaders] = Header
+	self.HeaderIDs[#self.HeaderIDs + 1] = Header
 end
 
 local EditBoxOnEnterPressed = function(self)
