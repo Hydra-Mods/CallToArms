@@ -1200,7 +1200,7 @@ function CallToArms:CreateConfig()
 	self.Request = false
 	
 	local Config = CreateFrame("Frame", "CallToArmsConfig", UIParent)
-	Config:SetSize(420, 18) -- 210
+	Config:SetSize(210, 18)
 	Config:SetPoint("CENTER", UIParent, 0, 160)
 	Config:SetMovable(true)
 	Config:EnableMouse(true)
@@ -1241,7 +1241,7 @@ function CallToArms:CreateConfig()
 	Config.CloseButton.Label:SetTexture("Interface\\AddOns\\CallToArms\\HydraUIClose.tga")
 	
 	local ConfigWindow = CreateFrame("Frame", "CallToArmsConfigWindow", Config)
-	ConfigWindow:SetSize(420, 240)
+	ConfigWindow:SetSize(210, 240)
 	ConfigWindow:SetPoint("TOPLEFT", Config, "BOTTOMLEFT", 0, -4)
 	ConfigWindow.Offset = 1
 	
