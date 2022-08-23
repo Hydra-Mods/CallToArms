@@ -5,6 +5,7 @@ local InCombatLockdown = InCombatLockdown
 local RequestLFDPlayerLockInfo = RequestLFDPlayerLockInfo
 local GetLFGRoleShortageRewards = GetLFGRoleShortageRewards
 local LFG_ROLE_NUM_SHORTAGE_TYPES = LFG_ROLE_NUM_SHORTAGE_TYPES
+local GetModifiedInstanceInfoFromMapID = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID
 
 local Class = select(2, UnitClass("player"))
 local Level = UnitLevel("player")
@@ -14,6 +15,7 @@ local UpdateInt = 60
 local CombatTime = 0
 local Locale = GetLocale()
 local ID, Name, SubType, Min, Max, Timewalking, _
+local ForAll, ForPlayer
 
 local BlankTexture = "Interface\\AddOns\\CallToArms\\HydraUIBlank.tga"
 local BarTexture = "Interface\\AddOns\\CallToArms\\HydraUI4.tga"
@@ -172,6 +174,7 @@ local Rename = {
 	[1146] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Cataclysm) --> Timewalking
 	[1453] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Mists of Pandaria) --> Timewalking
 	[1971] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Warlords of Draenor) --> Timewalking
+	[2274] = PLAYER_DIFFICULTY_TIMEWALKER, -- Random Timewalking Dungeon (Legion) --> Timewalking
 	[1670] = LFG_TYPE_RANDOM_DUNGEON, -- Random Dungeon (Battle for Azeroth) --> Random Dungeon
 	[1671] = LFG_TYPE_HEROIC_DUNGEON, -- Random Heroic (Battle for Azeroth) --> Heroic Dungeon
 }
@@ -347,8 +350,6 @@ function CallToArms:PLAYER_REGEN_DISABLED()
 	CombatTime = GetTime()
 end
 
-local ForAll, ForPlayer
-
 function CallToArms:CreateModules()
 	-- Find dungeons
 	for i = 1, GetNumRandomDungeons() do
@@ -362,11 +363,13 @@ function CallToArms:CreateModules()
 	
 	-- Find raids
 	for i = 1, GetNumRFDungeons() do
-		ID, Name, SubType, _, _, _, Min, Max = GetRFDungeonInfo(i)
+		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, _, MapName, _, _, MapID = GetRFDungeonInfo(i)
 		if (Level >= Min) and (Level <= Max) then
-			if ID ~= 2348 then -- Fix me
-				CallToArms:NewModule(ID, Name, SubType)
-			end
+				local Info = GetModifiedInstanceInfoFromMapID(MapID)
+
+			--if ID ~= 2348 then -- Fix me
+				CallToArms:NewModule(ID, Name, SubType, Info)
+			--end
 		end
 	end
 	
@@ -831,7 +834,7 @@ local OnLeave = function(self)
 	GameTooltip:Hide()
 end
 
-function CallToArms:NewModule(id, name, subtypeid)
+function CallToArms:NewModule(id, name, subtypeid, fated)
 	local Header = CreateFrame("Frame", nil, self.VisualParent, "BackdropTemplate")
 	Header:SetSize(132, 20)
 	Header:SetPoint("LEFT", UIParent, 8, 0)
@@ -862,6 +865,12 @@ function CallToArms:NewModule(id, name, subtypeid)
 	Header.Text:SetShadowOffset(1, -1)
 	Header.Text:SetText(name)
 	Header.Text:SetTextColor(0.92, 0.92, 0.08)
+	
+	if fated then
+		Header.Fated = Header:CreateTexture(nil, "ARTWORK")
+		Header.Fated:SetPoint("RIGHT", Header, -3, 0)
+		Header.Fated:SetAtlas("ui-ej-icon-empoweredraid-small", true)
+	end
 	
 	Header.IsQueued = Header:CreateTexture(nil, "OVERLAY")
 	Header.IsQueued:SetSize(Header:GetWidth() - 12, 12)
