@@ -364,6 +364,7 @@ function CallToArms:CreateModules()
 	-- Find raids
 	for i = 1, GetNumRFDungeons() do
 		ID, Name, SubType, _, _, _, Min, Max, _, _, _, _, _, _, _, _, _, _, _, MapName, _, _, MapID = GetRFDungeonInfo(i)
+		
 		if (Level >= Min) and (Level <= Max) then
 				local Info = GetModifiedInstanceInfoFromMapID(MapID)
 
@@ -726,12 +727,6 @@ local FilterUpdate = function(self)
 	end
 end
 
-local OnShow = function(self)
-	self.Flash:SetSize(130, 18)
-
-	self.FlashAnim:Play()
-end
-
 local OnClick = function(self, button)
 	ClearAllLFGDungeons(self.SubTypeID)
 	
@@ -1013,56 +1008,6 @@ function CallToArms:NewModule(id, name, subtypeid, fated)
 		Bar.Flash:SetVertexColor(0.8, 0.8, 0.8)
 		Bar.Flash:SetAlpha(0)
 		
-		Bar.FlashAnim = CreateAnimationGroup(Bar.Flash)
-		
-		Bar.FlashAnim.In1 = Bar.FlashAnim:CreateAnimation("Fade")
-		Bar.FlashAnim.In1:SetChange(1)
-		Bar.FlashAnim.In1:SetDuration(0.4)
-		Bar.FlashAnim.In1:SetEasing("inout")
-		Bar.FlashAnim.In1:SetOrder(1)
-		
-		Bar.FlashAnim.Out1 = Bar.FlashAnim:CreateAnimation("Fade")
-		Bar.FlashAnim.Out1:SetChange(-1)
-		Bar.FlashAnim.Out1:SetDuration(0.4)
-		Bar.FlashAnim.Out1:SetEasing("inout")
-		Bar.FlashAnim.Out1:SetOrder(2)
-		
-		Bar.FlashAnim.In2 = Bar.FlashAnim:CreateAnimation("Fade")
-		Bar.FlashAnim.In2:SetChange(1)
-		Bar.FlashAnim.In2:SetDuration(0.4)
-		Bar.FlashAnim.In2:SetEasing("inout")
-		Bar.FlashAnim.In2:SetOrder(3)
-		
-		Bar.FlashAnim.Out2 = Bar.FlashAnim:CreateAnimation("Fade")
-		Bar.FlashAnim.Out2:SetChange(-1)
-		Bar.FlashAnim.Out2:SetDuration(0.4)
-		Bar.FlashAnim.Out2:SetEasing("inout")
-		Bar.FlashAnim.Out2:SetOrder(4)
-		
-		Bar.FlashAnim.In3 = Bar.FlashAnim:CreateAnimation("Fade")
-		Bar.FlashAnim.In3:SetChange(1)
-		Bar.FlashAnim.In3:SetDuration(0.4)
-		Bar.FlashAnim.In3:SetEasing("inout")
-		Bar.FlashAnim.In3:SetOrder(5)
-		
-		Bar.FlashAnim.Out3 = Bar.FlashAnim:CreateAnimation("Fade")
-		Bar.FlashAnim.Out3:SetChange(-1)
-		Bar.FlashAnim.Out3:SetDuration(0.4)
-		Bar.FlashAnim.Out3:SetEasing("inout")
-		Bar.FlashAnim.Out3:SetOrder(6)
-		
-		Bar.FlashAnim.Width = Bar.FlashAnim:CreateAnimation("Width")
-		Bar.FlashAnim.Width:SetChange(200)
-		Bar.FlashAnim.Width:SetDuration(0.4)
-		Bar.FlashAnim.Width:SetEasing("out")
-		Bar.FlashAnim.Width:SetOrder(6)
-		
-		Bar.FlashAnim.Height = Bar.FlashAnim:CreateAnimation("Height")
-		Bar.FlashAnim.Height:SetChange(40)
-		Bar.FlashAnim.Height:SetDuration(0.4)
-		Bar.FlashAnim.Height:SetEasing("out")
-		Bar.FlashAnim.Height:SetOrder(6)
-		
 		Bar.Text = Bar:CreateFontString(nil, "OVERLAY")
 		Bar.Text:SetPoint("LEFT", Bar, 24, -0.5)
 		Bar.Text:SetFont(Font, 12)
@@ -1073,7 +1018,6 @@ function CallToArms:NewModule(id, name, subtypeid, fated)
 		Bar.Text:SetTextColor(0.92, 0.92, 0.92)
 		
 		Bar:RegisterForClicks("AnyUp")
-		Bar:SetScript("OnShow", OnShow)
 		Bar:SetScript("OnClick", OnClick)
 		Bar:SetScript("OnEnter", OnEnter)
 		Bar:SetScript("OnLeave", OnLeave)
