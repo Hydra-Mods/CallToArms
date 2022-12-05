@@ -183,6 +183,7 @@ local ClassRoleMap = {-- CanTank, CanHeal
 	DEATHKNIGHT = {true, false},
 	DEMONHUNTER = {true, false},
 	DRUID =       {true, true},
+	EVOKER =      {false, true},
 	HUNTER =      {false, false},
 	MAGE =        {false, false},
 	MONK =        {true, true},
