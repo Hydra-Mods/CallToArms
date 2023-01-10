@@ -1689,6 +1689,9 @@ local SlashCommand = function(cmd)
 		else
 			CallToArms:Show()
 		end
+	elseif (cmd == "reset") then
+		CallToArms:ClearAllPoints()
+		CallToArms:SetPoint("CENTER", UIParent, 0, 0)
 	else
 		if (not CallToArmsConfig) then
 			CallToArms:CreateConfig()
