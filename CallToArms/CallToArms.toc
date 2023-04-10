@@ -1,6 +1,6 @@
-## Interface: 100005
+## Interface: 100007
 ## Author: Hydra
-## Version: 1.58
+## Version: 1.60
 ## Title: Call to Arms
 ## Notes: Display active Call to Arms bonuses
 ## SavedVariables: CallToArmsSettings

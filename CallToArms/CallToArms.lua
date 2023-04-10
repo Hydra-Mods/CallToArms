@@ -1708,4 +1708,5 @@ local SlashCommand = function(cmd)
 end
 
 SLASH_CALLTOARMS1 = "/cta"
+SLASH_CALLTOARMS2 = "/ctaa"
 SlashCmdList["CALLTOARMS"] = SlashCommand
