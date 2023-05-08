@@ -1,8 +1,9 @@
 ## Interface: 100100
 ## Author: Hydra
-## Version: 1.61
+## Version: 1.62
 ## Title: Call to Arms
 ## Notes: Display active Call to Arms bonuses
 ## SavedVariables: CallToArmsSettings
+## IconTexture: Interface\Icons\inv_misc_bag_34
 
 CallToArms.lua
