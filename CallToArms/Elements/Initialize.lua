@@ -1,6 +1,6 @@
 local Name, AddOn = ...
 
-local Version, Build = GetBuildInfo()
+local Version, Build, Date, TOC = GetBuildInfo()
 
 local CTA = CreateFrame("Frame", "CallToArmsWidget", UIParent, "BackdropTemplate")
 CTA:SetPoint("CENTER", UIParent)
@@ -18,7 +18,7 @@ CTA.Font = "Interface\\Addons\\CallToArms\\Assets\\PTSans.ttf"
 CTA.Textures = SharedMedia:HashTable("statusbar")
 CTA.Fonts = SharedMedia:HashTable("font")
 CTA.SharedMedia = SharedMedia
-CTA.Build = tonumber(Build)
+CTA.Build = tonumber(TOC)
 
 -- Functions
 function CTA:print(...)
